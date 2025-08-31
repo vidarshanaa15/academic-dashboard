@@ -1,44 +1,71 @@
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
 import axios from 'axios'
+import SubjectTile from './components/SubjectTile'
 
 function App() {
-  const [count, setCount] = useState(0)
+  // const [count, setCount] = useState(0);
+  // const fetchAPI = async () => {
+  //   const response = await axios.get("http://localhost:5000/api");
+  //   console.log(response.data.fruits);
+  // };
+  // useEffect(() => {
+  //   fetchAPI();
+  // }, []);
 
-  const fetchAPI = async () => {
-    const response = await axios.get("http://localhost:5000/api");
-    console.log(response.data.fruits);
+  const [grades, setGrades] = useState([]);
+  const [credits, setCredit] = useState([]);
+
+  const handleGradeChange = (subj, grade) => {
+    grade = parseInt(grade);
+    if (grade !== 0) grade += 4;  // grade starts from C=5
+    setGrades(prev => ({
+      ...prev, [subj]: grade
+    }));
   };
 
+  const handleCreditChange = (subj, credit) => {
+    credit = parseFloat(credit);
+    setCredit(prev => ({
+      ...prev, [subj]: credit
+    }));
+  }
+
+  const calculateGPA = () => {
+    let totalPoints = 0;
+    let totalCredits = 0;
+
+    // cant use .forEach on grades directly as it is not JS arr, it is an object
+    Object.keys(grades).forEach(subj => {
+      const grade = grades[subj];
+      const credit = credits[subj];
+      if (grade && credit) {
+        totalPoints += grade * credit;
+        totalCredits += credit;
+      }
+
+      const gpa = totalPoints / totalCredits;
+      document.getElementById("result").innerText = gpa.toFixed(2);
+    });
+  }
+
+  // console log for debugging
   useEffect(() => {
-    fetchAPI();
-  }, []);
+    console.log(grades);
+    console.log(credits);
+  }, [grades, credits]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <SubjectTile name='COA' onGradeChange={handleGradeChange} onCreditChange={handleCreditChange} />
+      <SubjectTile name='DSA' onGradeChange={handleGradeChange} onCreditChange={handleCreditChange} />
+      <SubjectTile name='DSA Lab' onGradeChange={handleGradeChange} onCreditChange={handleCreditChange} />
+      <SubjectTile name='SEPP' onGradeChange={handleGradeChange} onCreditChange={handleCreditChange} />
+      <SubjectTile name='Tamil' onGradeChange={handleGradeChange} onCreditChange={handleCreditChange} />
+      <SubjectTile name='Math' onGradeChange={handleGradeChange} onCreditChange={handleCreditChange} />
+      <SubjectTile name='Physics' onGradeChange={handleGradeChange} onCreditChange={handleCreditChange} />
+      <button onClick={calculateGPA}>Calculate GPA</button>
+      <p id="result"></p>
+    </div>
   )
 }
 
