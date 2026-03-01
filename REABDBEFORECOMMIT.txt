@@ -1,0 +1,1 @@
+when opened in a new window for the first time, a tour is given. make sure spacing is fine there too
