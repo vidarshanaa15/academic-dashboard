@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 interface CircularProgressProps {
   value: number; // 0-10 for GPA
   max?: number;
+  min?: number; // Added to scale the visual progress
   size?: number;
   strokeWidth?: number;
   showLabel?: boolean;
@@ -13,6 +14,7 @@ interface CircularProgressProps {
 export function CircularProgress({
   value,
   max = 10,
+  min = 5, // We start the "visual fill" from 5.0 GPA
   size = 200,
   strokeWidth = 16,
   showLabel = true,
@@ -31,15 +33,22 @@ export function CircularProgress({
 
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const percentage = (displayValue / max) * 100;
-  const offset = circumference - (percentage / 100) * circumference;
 
-  // Color based on GPA value
+  // --- SCALING LOGIC ---
+  // If GPA is below min, show 0%. Otherwise, calculate progress between min and max.
+  const effectiveValue = Math.max(min, displayValue);
+  const percentage = ((effectiveValue - min) / (max - min)) * 100;
+
+  // Ensure we don't exceed 100% or go below 0%
+  const clampedPercentage = Math.min(100, Math.max(0, percentage));
+  const offset = circumference - (clampedPercentage / 100) * circumference;
+
+  // Color based on GPA value (keeping your exact styling)
   const getColor = () => {
-    if (value >= 9) return 'var(--grade-o)'; // Purple for excellent
-    if (value >= 8) return 'var(--accent)'; // Cyan for good
-    if (value >= 6) return 'var(--success)'; // Green for average
-    return 'var(--warning)'; // Amber for needs improvement
+    if (value >= 9) return 'var(--grade-o)';
+    if (value >= 8) return 'var(--accent)';
+    if (value >= 6) return 'var(--success)';
+    return 'var(--warning)';
   };
 
   return (
@@ -90,6 +99,7 @@ export function CircularProgress({
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
+            {/* We show the REAL value, not the scaled percentage */}
             {displayValue.toFixed(2)}
           </motion.span>
           <span className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>

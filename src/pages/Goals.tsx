@@ -67,19 +67,34 @@ export function Goals() {
   };
 
   const addGoal = async () => {
+    if (!newGoal.title) return;
+
     try {
+      // get current max goal id and increment it for new id
+      const maxIdNumber = goals.reduce((max, goal) => {
+        const num = parseInt(goal.id.replace(/\D/g, '')) || 0;
+        return Math.max(max, num);
+      }, 0);
+
+      const nextId = `goal${maxIdNumber + 1}`;
+
       const goalObj: Goal = {
-        id: `goal-${Date.now()}`,
+        id: nextId,
         title: newGoal.title,
         target_semester: newGoal.target_semester,
         priority: newGoal.priority,
         completed: false
       };
+
+      // addGoalToDb is defined in dataService.ts
       const savedGoal = await addGoalToDb(goalObj);
       setGoals([...goals, savedGoal]);
       setNewGoal({ title: '', target_semester: 'Semester 7', priority: 'Medium' });
       setShowGoalModal(false);
-    } catch (err) { alert("Failed to add goal"); }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to add goal");
+    }
   };
 
   if (loading) return (

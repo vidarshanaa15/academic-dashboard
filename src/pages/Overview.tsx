@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Award, TrendingUp, BookOpen, GraduationCap, Loader2 } from 'lucide-react';
 import { StatCard } from '../components/StatCard';
 import { GPALineChart } from '../components/GPALineChart';
@@ -11,6 +11,7 @@ import { getTotalCredits, getGradeDistribution, getCreditBreakdown, getSubjectAr
 export function Overview() {
   const [academicData, setAcademicData] = useState<{ semesters: any[], goals: any[] } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [chartData, setChartData] = useState<any[]>([]);
 
   useEffect(() => {
     async function loadDashboardData() {
@@ -27,6 +28,28 @@ export function Overview() {
     loadDashboardData();
   }, []);
 
+  const semesters = academicData?.semesters || [];
+
+  const gpaChartData = useMemo(() => {
+    if (!semesters || semesters.length === 0) return [];
+
+    return [...semesters]
+      .sort((a, b) => {
+        const numA = parseInt(a.name.replace(/\D/g, '')) || 0;
+        const numB = parseInt(b.name.replace(/\D/g, '')) || 0;
+
+        if (numA !== numB) {
+          return numA - numB;
+        }
+        return 0;
+      })
+      .map(sem => ({
+        semester: sem.name,
+        gpa: sem.gpa || 0,
+        cgpa: sem.cgpa || 0,
+      }));
+  }, [semesters]);
+
   if (loading) {
     return (
       <div className="h-[60vh] w-full flex flex-col items-center justify-center gap-4">
@@ -35,8 +58,6 @@ export function Overview() {
       </div>
     );
   }
-
-  const semesters = academicData?.semesters || [];
 
   const currentCGPA = semesters.length > 0 ? semesters[semesters.length - 1].cgpa : 0;
   const totalCredits = getTotalCredits(semesters);
@@ -53,13 +74,6 @@ export function Overview() {
   const mostCommonGrade = gradeDistribution.length > 0
     ? gradeDistribution.reduce((max, item) => item.count > max.count ? item : max, gradeDistribution[0])
     : { grade: 'N/A', count: 0 };
-
-  // Chart data
-  const gpaChartData = semesters.map(sem => ({
-    semester: sem.name,
-    gpa: sem.gpa,
-    cgpa: sem.cgpa,
-  }));
 
   const creditBreakdown = getCreditBreakdown(semesters);
   const subjectAreaPerformance = getSubjectAreaPerformance(semesters);
