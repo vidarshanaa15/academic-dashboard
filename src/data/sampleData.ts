@@ -2,7 +2,7 @@ export interface Subject {
   id: string;
   name: string;
   credits: number;
-  grade: string;
+  grade: string | null;
   tag: string;
 }
 
@@ -10,10 +10,11 @@ export interface Semester {
   id: string;
   name: string;
   subjects: Subject[];
-  gpa: number;
-  cgpa: number;
+  gpa: number | null;
+  cgpa: number | null;
   year: number;
   term: 'Odd' | 'Even';
+  status: 'planned' | 'completed';
 }
 
 export interface Goal {
@@ -38,22 +39,24 @@ export const gradeLabels = ['O', 'A+', 'A', 'B+', 'B', 'C'];
 
 // Helper functions
 export function calculateGPA(subjects: Subject[]): number {
-  const totalPoints = subjects.reduce((sum, sub) => {
-    const point = gradeMapping[sub.grade] || 0;
-    return sum + (sub.credits * point);
+  const graded = subjects.filter(sub => sub.grade !== null);
+  if (!graded.length) return 0;
+  const totalPoints = graded.reduce((sum, sub) => {
+    return sum + (sub.credits * (gradeMapping[sub.grade!] ?? 0));
   }, 0);
-  const totalCredits = subjects.reduce((sum, sub) => sum + sub.credits, 0);
+  const totalCredits = graded.reduce((sum, sub) => sum + sub.credits, 0);
   return totalCredits > 0 ? Number((totalPoints / totalCredits).toFixed(2)) : 0;
 }
 
 export function calculateCGPA(semesters: Semester[]): number {
   let totalPoints = 0;
   let totalCredits = 0;
-
   semesters.forEach(sem => {
+    // Only include completed semesters in CGPA
+    if (sem.status !== 'completed') return;
     sem.subjects.forEach(sub => {
-      const point = gradeMapping[sub.grade] || 0;
-      totalPoints += (sub.credits * point);
+      if (!sub.grade) return;
+      totalPoints += sub.credits * (gradeMapping[sub.grade] ?? 0);
       totalCredits += sub.credits;
     });
   });
@@ -75,15 +78,13 @@ export function getGradeDistribution(semesters: Semester[]) {
     'B': 0,
     'C': 0,
   };
-
   semesters.forEach(sem => {
     sem.subjects.forEach(sub => {
-      if (distribution[sub.grade] !== undefined) {
+      if (sub.grade && distribution[sub.grade] !== undefined) {
         distribution[sub.grade]++;
       }
     });
   });
-
   return Object.entries(distribution).map(([grade, count]) => ({
     grade,
     count,
@@ -101,30 +102,27 @@ export function getCreditBreakdown(semesters: Semester[]) {
     'Humanities': 0,
     'Lab': 0,
   };
-
   semesters.forEach(sem => {
     sem.subjects.forEach(sub => {
-      breakdown[sub.tag] += sub.credits;
+      if (breakdown[sub.tag] !== undefined) {
+        breakdown[sub.tag] += sub.credits;
+      }
     });
   });
-
   return Object.entries(breakdown).map(([name, value]) => ({ name, value }));
 }
 
 export function getSubjectAreaPerformance(semesters: Semester[]) {
   const areaMap: Record<string, { total: number; count: number }> = {};
-
   semesters.forEach(sem => {
     sem.subjects.forEach(sub => {
-      let area = sub.tag;
-      if (!areaMap[area]) {
-        areaMap[area] = { total: 0, count: 0 };
-      }
-      areaMap[area].total += (gradeMapping[sub.grade] || 0);
+      if (!sub.grade) return;
+      const area = sub.tag;
+      if (!areaMap[area]) areaMap[area] = { total: 0, count: 0 };
+      areaMap[area].total += (gradeMapping[sub.grade] ?? 0);
       areaMap[area].count++;
     });
   });
-
   return Object.entries(areaMap).map(([area, data]) => ({
     area,
     average: Number((data.total / data.count).toFixed(2)),
