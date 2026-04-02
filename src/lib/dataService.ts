@@ -109,3 +109,14 @@ export const addGoalToDb = async (goal: any) => {
   if (error) throw error;
   return data[0];
 };
+
+export const deleteSubjectFromDb = async (subjectId: string) => {
+  const { error } = await supabase.from('subjects').delete().eq('id', subjectId);
+  if (error) throw error;
+};
+
+export const deleteSemesterFromDb = async (semesterId: string) => {
+  // Subjects are deleted automatically via ON DELETE CASCADE
+  const { error } = await supabase.from('semesters').delete().eq('id', semesterId);
+  if (error) throw error;
+};
