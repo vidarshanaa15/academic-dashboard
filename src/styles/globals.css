@@ -36,7 +36,7 @@
   --success: #10b981;
   --danger: #ef4444;
   --warning: #f59e0b;
-  
+
   /* Chart colors */
   --chart-1: #06b6d4;
   --chart-2: #a855f7;
@@ -44,7 +44,7 @@
   --chart-4: #f59e0b;
   --chart-5: #ef4444;
   --chart-6: #8b5cf6;
-  
+
   /* Grade colors */
   --grade-o: #a855f7;
   --grade-a-plus: #06b6d4;
@@ -52,12 +52,12 @@
   --grade-b-plus: #f59e0b;
   --grade-b: #fb923c;
   --grade-c: #ef4444;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-  
+
   /* Spacing scale (in px) */
   --space-1: 4px;
   --space-2: 8px;
@@ -69,14 +69,14 @@
   --space-12: 48px;
   --space-16: 64px;
   --space-20: 80px;
-  
+
   /* Border radius */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-full: 9999px;
-  
+
   /* Transitions */
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
@@ -96,7 +96,7 @@
   --success: #059669;
   --danger: #dc2626;
   --warning: #d97706;
-  
+
   /* Chart colors (adjusted for light theme) */
   --chart-1: #0c4a6e;
   --chart-2: #0d9488;
@@ -104,7 +104,7 @@
   --chart-4: #d97706;
   --chart-5: #dc2626;
   --chart-6: #7c3aed;
-  
+
   /* Grade colors (adjusted) */
   --grade-o: #7c3aed;
   --grade-a-plus: #0c4a6e;
@@ -112,7 +112,7 @@
   --grade-b-plus: #d97706;
   --grade-b: #ea580c;
   --grade-c: #dc2626;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -194,7 +194,8 @@ small {
   line-height: 1.5;
 }
 
-code, pre {
+code,
+pre {
   font-family: 'Source Code Pro', 'Courier New', monospace;
   font-size: 0.875rem;
 }
@@ -241,11 +242,11 @@ code, pre {
   h1 {
     font-size: 1.875rem;
   }
-  
+
   h2 {
     font-size: 1.5rem;
   }
-  
+
   h3 {
     font-size: 1.25rem;
   }

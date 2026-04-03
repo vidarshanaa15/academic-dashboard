@@ -3,6 +3,7 @@ import { Plus, Download, ChevronRight, Edit2, Loader2, Clock, Trash2, AlertTrian
 import { motion, AnimatePresence } from 'framer-motion';
 import { Modal } from '../components/Modal';
 import { CreditPieChart } from '../components/CreditPieChart';
+import { GradePieChart } from '../components/GradePieChart';
 import { AddSemesterModal } from '../components/AddSemesterModal';
 import { EditSemesterModal } from '../components/EditSemesterModal';
 import { type Semester, gradeMapping } from '../data/sampleData';
@@ -59,7 +60,6 @@ export function Semesters() {
       await deleteSemesterFromDb(confirmDeleteSemester.id);
       setSemesters(prev => prev.filter(s => s.id !== confirmDeleteSemester.id));
       setConfirmDeleteSemester(null);
-      // Close detail modal if the deleted semester was open
       if (selectedSemester?.id === confirmDeleteSemester.id) {
         setShowDetailModal(false);
         setSelectedSemester(null);
@@ -94,6 +94,21 @@ export function Semesters() {
     return Object.entries(breakdown)
       .filter(([_, value]) => value > 0)
       .map(([name, value]) => ({ name, value }));
+  };
+
+  // Returns grade distribution — only subjects that have a grade
+  const getGradeBreakdownForSemester = (semester: Semester) => {
+    const counts: Record<string, number> = {};
+    semester.subjects?.forEach(sub => {
+      if (sub.grade) {
+        counts[sub.grade] = (counts[sub.grade] ?? 0) + 1;
+      }
+    });
+    // Order: O → A+ → A → B+ → B → C
+    const ORDER = ['O', 'A+', 'A', 'B+', 'B', 'C'];
+    return ORDER
+      .filter(g => counts[g])
+      .map(g => ({ name: g, value: counts[g] }));
   };
 
   // ── Loading ──
@@ -373,15 +388,61 @@ export function Semesters() {
               </div>
             </div>
 
-            {/* Credit Distribution Chart */}
-            {getCreditBreakdownForSemester(selectedSemester).length > 0 && (
-              <div>
-                <h5 className="mb-3" style={{ color: 'var(--text-primary)' }}>Credit Distribution</h5>
-                <div className="h-64">
-                  <CreditPieChart data={getCreditBreakdownForSemester(selectedSemester)} />
+            {/* ── Dual Pie Charts ── */}
+            {(() => {
+              const creditData = getCreditBreakdownForSemester(selectedSemester);
+              const gradeData = getGradeBreakdownForSemester(selectedSemester);
+              const showCredits = creditData.length > 0;
+              const showGrades = gradeData.length > 0;
+
+              if (!showCredits && !showGrades) return null;
+
+              return (
+                <div>
+                  <h5 className="mb-4" style={{ color: 'var(--text-primary)' }}>Distribution</h5>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    {/* Left — Course Type */}
+                    {showCredits && (
+                      <div
+                        className="p-4 rounded-xl border"
+                        style={{ backgroundColor: 'var(--bg)', borderColor: 'var(--muted)' }}
+                      >
+                        <p className="text-sm font-medium text-center mb-2" style={{ color: 'var(--text-secondary)' }}>
+                          Course Type
+                        </p>
+                        <CreditPieChart data={creditData} />
+                      </div>
+                    )}
+
+                    {/* Right — Grade Distribution */}
+                    {showGrades && (
+                      <div
+                        className="p-4 rounded-xl border"
+                        style={{ backgroundColor: 'var(--bg)', borderColor: 'var(--muted)' }}
+                      >
+                        <p className="text-sm font-medium text-center mb-2" style={{ color: 'var(--text-secondary)' }}>
+                          Grade Distribution
+                        </p>
+                        <GradePieChart data={gradeData} />
+                      </div>
+                    )}
+
+                    {/* If only one is present, still centre it gracefully */}
+                    {showCredits && !showGrades && (
+                      <div
+                        className="p-4 rounded-xl border flex items-center justify-center"
+                        style={{ backgroundColor: 'var(--bg)', borderColor: 'var(--muted)' }}
+                      >
+                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                          No grades entered yet
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Footer actions */}
             <div className="flex gap-3">
