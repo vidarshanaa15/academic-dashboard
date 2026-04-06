@@ -32,13 +32,13 @@ export function Goals() {
   const totalCreditsCompleted = getTotalCredits(semesters);
   const totalPoints = semesters.reduce((sum, sem) => {
     const semPoints = sem.subjects?.reduce((subSum, sub) => {
-      const pointValue = gradeMapping[sub.grade] || 0;
+      const pointValue = gradeMapping[sub.grade ?? ''] ?? 0; // ?? is the "nullish coalescing operator". it means "use the left side, but if it's null or undefined, fall back to the right side". this resolves the "null cannot be used as index type" error i had when i used "||"
       return subSum + (sub.credits * pointValue);
     }, 0) || 0;
     return sum + semPoints;
   }, 0);
 
-  // Calculate required average GPA
+  // calc required average GPA
   const calculateRequiredGPA = () => {
     const target = parseFloat(targetGPA) || 0;
     const remaining = parseFloat(remainingCredits) || 0;
@@ -106,7 +106,6 @@ export function Goals() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="mb-2" style={{ color: 'var(--text-primary)' }}>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Plus, Download, ChevronRight, Edit2, Loader2, Clock, Trash2, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Modal } from '../components/Modal';
@@ -9,6 +9,8 @@ import { EditSemesterModal } from '../components/EditSemesterModal';
 import { type Semester, gradeMapping } from '../data/sampleData';
 import { EmptyState } from '../components/EmptyState';
 import { fetchAcademicData, deleteSemesterFromDb } from '../lib/dataService';
+import { SemesterPDFPreview } from '../components/SemesterPDFPreview';
+import { exportSemesterPDF } from '../lib/exportSemesterPDF';
 
 export function Semesters() {
   const [semesters, setSemesters] = useState<Semester[]>([]);
@@ -20,6 +22,8 @@ export function Semesters() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [exportingPDF, setExportingPDF] = useState(false);
+  const pdfPreviewRef = useRef<HTMLDivElement>(null);
+  const [pdfSemester, setPdfSemester] = useState<Semester | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -71,12 +75,21 @@ export function Semesters() {
     }
   };
 
-  const handleExportPDF = (semester: Semester) => {
+  const handleExportPDF = async (semester: Semester) => {
     setExportingPDF(true);
-    setTimeout(() => {
+    setPdfSemester(semester);          // mount the hidden preview
+
+    // Give React one tick to render the hidden div, then capture
+    await new Promise(r => setTimeout(r, 300));
+
+    try {
+      await exportSemesterPDF('semester-pdf-preview', semester);
+    } catch (err) {
+      console.error('PDF export failed:', err);
+    } finally {
       setExportingPDF(false);
-      alert(`PDF for ${semester.name} downloaded!`);
-    }, 2000);
+      setPdfSemester(null);            // unmount after export
+    }
   };
 
   const viewSemesterDetails = (semester: Semester) => {
@@ -96,7 +109,7 @@ export function Semesters() {
       .map(([name, value]) => ({ name, value }));
   };
 
-  // Returns grade distribution — only subjects that have a grade
+  // returns grade distribution (only subjects that have a grade)
   const getGradeBreakdownForSemester = (semester: Semester) => {
     const counts: Record<string, number> = {};
     semester.subjects?.forEach(sub => {
@@ -104,14 +117,12 @@ export function Semesters() {
         counts[sub.grade] = (counts[sub.grade] ?? 0) + 1;
       }
     });
-    // Order: O → A+ → A → B+ → B → C
     const ORDER = ['O', 'A+', 'A', 'B+', 'B', 'C'];
     return ORDER
       .filter(g => counts[g])
       .map(g => ({ name: g, value: counts[g] }));
   };
 
-  // ── Loading ──
   if (loading) {
     return (
       <div className="h-[60vh] w-full flex flex-col items-center justify-center gap-4">
@@ -121,7 +132,6 @@ export function Semesters() {
     );
   }
 
-  // ── Empty ──
   if (semesters.length === 0) {
     return (
       <div className="p-6">
@@ -139,7 +149,6 @@ export function Semesters() {
     );
   }
 
-  // ── Main ──
   return (
     <div className="p-6 space-y-6">
 
@@ -257,7 +266,6 @@ export function Semesters() {
                 </span>
               </div>
 
-              {/* Sparkline */}
               <div className="mt-4 flex gap-1">
                 {semester.subjects.map((subject, idx) => (
                   <div
@@ -280,7 +288,7 @@ export function Semesters() {
         </AnimatePresence>
       </div>
 
-      {/* ── Semester Detail Modal ── */}
+      {/* Semester Detail Modal */}
       <Modal
         isOpen={showDetailModal}
         onClose={() => setShowDetailModal(false)}
@@ -388,7 +396,7 @@ export function Semesters() {
               </div>
             </div>
 
-            {/* ── Dual Pie Charts ── */}
+            {/* pie charts */}
             {(() => {
               const creditData = getCreditBreakdownForSemester(selectedSemester);
               const gradeData = getGradeBreakdownForSemester(selectedSemester);
@@ -402,7 +410,7 @@ export function Semesters() {
                   <h5 className="mb-4" style={{ color: 'var(--text-primary)' }}>Distribution</h5>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                    {/* Left — Course Type */}
+                    {/* course type */}
                     {showCredits && (
                       <div
                         className="p-4 rounded-xl border"
@@ -415,7 +423,7 @@ export function Semesters() {
                       </div>
                     )}
 
-                    {/* Right — Grade Distribution */}
+                    {/* grade distribution */}
                     {showGrades && (
                       <div
                         className="p-4 rounded-xl border"
@@ -428,7 +436,6 @@ export function Semesters() {
                       </div>
                     )}
 
-                    {/* If only one is present, still centre it gracefully */}
                     {showCredits && !showGrades && (
                       <div
                         className="p-4 rounded-xl border flex items-center justify-center"
@@ -477,14 +484,14 @@ export function Semesters() {
         )}
       </Modal>
 
-      {/* ── Add Semester Modal ── */}
+      {/* Add Semester Modal */}
       <AddSemesterModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onAdd={handleAddSemester}
       />
 
-      {/* ── Edit Grades Modal ── */}
+      {/* Edit Grades Modal */}
       {editingSemester && (
         <EditSemesterModal
           semester={editingSemester}
@@ -494,7 +501,7 @@ export function Semesters() {
         />
       )}
 
-      {/* ── Delete Semester Confirmation ── */}
+      {/* Delete Semester Confirmation */}
       <AnimatePresence>
         {confirmDeleteSemester && (
           <motion.div
@@ -553,7 +560,7 @@ export function Semesters() {
         )}
       </AnimatePresence>
 
-      {/* ── PDF Export Overlay ── */}
+      {/* PDF Export Overlay */}
       <AnimatePresence>
         {exportingPDF && (
           <motion.div
@@ -577,6 +584,10 @@ export function Semesters() {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Hidden PDF render target , i.e,  "only mount this component when pdfSemester has a val, so the PDF library has a real DOM node (hidden) to capture via pdfPreviewRef"*/}
+      {pdfSemester && (
+        <SemesterPDFPreview ref={pdfPreviewRef} semester={pdfSemester} />
+      )}
     </div>
   );
 }

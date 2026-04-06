@@ -64,12 +64,10 @@ export function Overview() {
   const creditsRemaining = 200 - totalCredits;
   const semestersCompleted = semesters.length;
 
-  // Find highest GPA semester
   const highestSemester = semesters.length > 0
     ? semesters.reduce((max, sem) => sem.gpa > max.gpa ? sem : max, semesters[0])
     : { name: 'N/A', gpa: 0 };
 
-  // Find most common grade
   const gradeDistribution = getGradeDistribution(semesters);
   const mostCommonGrade = gradeDistribution.length > 0
     ? gradeDistribution.reduce((max, item) => item.count > max.count ? item : max, gradeDistribution[0])
@@ -80,7 +78,6 @@ export function Overview() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
       <div>
         <h1 className="mb-2" style={{ color: 'var(--text-primary)' }}>
           Academic Overview
@@ -90,7 +87,6 @@ export function Overview() {
         </p>
       </div>
 
-      {/* Main Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Current CGPA"
@@ -120,7 +116,6 @@ export function Overview() {
         />
       </div>
 
-      {/* Key Achievements */}
       <div>
         <h3 className="mb-4" style={{ color: 'var(--text-primary)' }}>
           Key Achievements
@@ -188,7 +183,6 @@ export function Overview() {
         </div>
       </div>
 
-      {/* GPA/CGPA Chart */}
       <div
         className="p-6 rounded-xl border"
         style={{
@@ -202,9 +196,7 @@ export function Overview() {
         <GPALineChart data={gpaChartData} />
       </div>
 
-      {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Grade Distribution */}
         <div
           className="p-6 rounded-xl border"
           style={{
@@ -218,7 +210,6 @@ export function Overview() {
           <GradeBarChart data={gradeDistribution} />
         </div>
 
-        {/* Credit Breakdown */}
         <div
           className="p-6 rounded-xl border"
           style={{
@@ -233,7 +224,6 @@ export function Overview() {
         </div>
       </div>
 
-      {/* Insights */}
       <div
         className="p-6 rounded-xl border"
         style={{

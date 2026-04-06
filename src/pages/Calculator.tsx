@@ -61,7 +61,7 @@ export function Calculator() {
 
     setCalculatedGPA(gpa);
 
-    // Show confetti if GPA >= target
+    // confetti!!! if GPA >= target
     if (gpa >= personalTarget) {
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 3000);
@@ -77,7 +77,6 @@ export function Calculator() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
       <div>
         <h1 className="mb-2" style={{ color: 'var(--text-primary)' }}>
           GPA Calculator
@@ -88,9 +87,7 @@ export function Calculator() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Input Form */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Add Subject Input */}
           <div
             className="p-6 rounded-xl border"
             style={{
@@ -132,7 +129,6 @@ export function Calculator() {
             </div>
           </div>
 
-          {/* Subjects List */}
           <div
             className="p-6 rounded-xl border"
             style={{
@@ -165,7 +161,6 @@ export function Calculator() {
                     }}
                   >
                     <div className="grid grid-cols-12 gap-3 items-center">
-                      {/* Subject Name */}
                       <div className="col-span-5">
                         <input
                           type="text"
@@ -180,7 +175,6 @@ export function Calculator() {
                         />
                       </div>
 
-                      {/* Credits */}
                       <div className="col-span-2">
                         <input
                           type="number"
@@ -198,7 +192,6 @@ export function Calculator() {
                         />
                       </div>
 
-                      {/* Grade Dropdown */}
                       <div className="col-span-2">
                         <select
                           value={subject.grade}
@@ -218,7 +211,6 @@ export function Calculator() {
                         </select>
                       </div>
 
-                      {/* Grade Points Display */}
                       <div className="col-span-2 text-center">
                         <span
                           className="px-3 py-2 rounded-lg text-sm inline-block"
@@ -231,7 +223,6 @@ export function Calculator() {
                         </span>
                       </div>
 
-                      {/* Delete Button */}
                       <div className="col-span-1">
                         <button
                           onClick={() => removeSubject(subject.id)}
@@ -243,7 +234,6 @@ export function Calculator() {
                       </div>
                     </div>
 
-                    {/* Grade Slider (visual indicator) */}
                     <div className="mt-3">
                       <input
                         type="range"
@@ -282,7 +272,6 @@ export function Calculator() {
             </div>
           </div>
 
-          {/* Formula Explanation */}
           <div
             className="p-6 rounded-xl border"
             style={{
@@ -317,9 +306,7 @@ export function Calculator() {
           </div>
         </div>
 
-        {/* Right Column - Result Display */}
         <div className="space-y-6">
-          {/* Circular Progress */}
           <div
             className="p-6 rounded-xl border flex flex-col items-center"
             style={{
@@ -355,7 +342,6 @@ export function Calculator() {
             </motion.button>
           </div>
 
-          {/* Personal Target */}
           <div
             className="p-6 rounded-xl border"
             style={{
@@ -399,7 +385,6 @@ export function Calculator() {
             </div>
           </div>
 
-          {/* Quick Actions */}
           <div
             className="p-6 rounded-xl border"
             style={{
