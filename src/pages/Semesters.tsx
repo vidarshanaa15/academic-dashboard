@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Download, ChevronRight, Edit2, Loader2, Clock, Trash2, AlertTriangle } from 'lucide-react';
+import { Plus, Download, ChevronRight, Edit2, Loader2, Clock, Trash2, AlertTriangle, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Modal } from '../components/Modal';
 import { CreditPieChart } from '../components/CreditPieChart';
@@ -24,6 +24,7 @@ export function Semesters() {
   const [exportingPDF, setExportingPDF] = useState(false);
   const pdfPreviewRef = useRef<HTMLDivElement>(null);
   const [pdfSemester, setPdfSemester] = useState<Semester | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     async function loadData() {
@@ -123,6 +124,12 @@ export function Semesters() {
       .map(g => ({ name: g, value: counts[g] }));
   };
 
+  const filteredSemesters = semesters.filter(semester =>
+    semester.subjects.some(sub =>
+      sub.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || semester.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading) {
     return (
       <div className="h-[60vh] w-full flex flex-col items-center justify-center gap-4">
@@ -151,8 +158,6 @@ export function Semesters() {
 
   return (
     <div className="p-6 space-y-6">
-
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="mb-2" style={{ color: 'var(--text-primary)' }}>Semesters</h1>
@@ -160,6 +165,27 @@ export function Semesters() {
             View and manage your semester-wise academic records
           </p>
         </div>
+
+        {/* search bar */}
+        <div className="flex-1 max-w-md">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
+            <input
+              type="text"
+              placeholder="Search courses, semesters..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 rounded-lg border outline-none transition-all focus:ring-2"
+              style={{
+                backgroundColor: 'var(--bg)',
+                borderColor: 'var(--muted)',
+                color: 'var(--text-primary)',
+                '--tw-ring-color': 'var(--accent)',
+              } as React.CSSProperties}
+            />
+          </div>
+        </div>
+
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -175,7 +201,7 @@ export function Semesters() {
       {/* Semesters Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <AnimatePresence>
-          {semesters.map((semester, index) => (
+          {filteredSemesters.map((semester, index) => (
             <motion.div
               key={semester.id}
               initial={{ opacity: 0, y: 20 }}
