@@ -1,4 +1,4 @@
-import { Moon, Sun, User } from 'lucide-react';
+import { Moon, Sun, User, Bell } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface TopbarProps {
@@ -9,41 +9,75 @@ interface TopbarProps {
 export function Topbar({ theme, onThemeToggle }: TopbarProps) {
   return (
     <header
-      className="h-16 sticky top-0 z-10 flex items-center justify-between px-6 border-b backdrop-blur-sm"
       style={{
-        backgroundColor: 'var(--surface)',
-        borderColor: 'var(--muted)'
+        height: 64,
+        position: 'sticky',
+        top: 0,
+        zIndex: 30,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 24px',
+        /* glass navbar */
+        background: 'rgba(8, 13, 26, 0.7)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        flexShrink: 0,
       }}
     >
-      <div className="flex-1" />
+      {/* ── Left: breadcrumb placeholder ──────────────────── */}
+      <div style={{ flex: 1 }} />
 
-      <div className="flex items-center gap-4">
+      {/* ── Right: actions ────────────────────────────────── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+
+        {/* Theme toggle */}
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.94 }}
           onClick={onThemeToggle}
-          className="p-2 rounded-lg transition-colors"
-          style={{
-            backgroundColor: 'var(--bg)',
-            color: 'var(--text-primary)'
-          }}
           aria-label="Toggle theme"
+          style={{
+            width: 38, height: 38, borderRadius: 10,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            cursor: 'pointer', transition: 'background 0.2s ease',
+            color: 'var(--text-secondary)',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
         >
           <motion.div
             initial={false}
-            animate={{ rotate: theme === 'dark' ? 0 : 180 }}
-            transition={{ duration: 0.3 }}
+            animate={{ rotate: theme === 'dark' ? 0 : 180, scale: 1 }}
+            transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
           >
-            {theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            {theme === 'dark'
+              ? <Moon size={16} style={{ color: 'var(--accent-2)' }} />
+              : <Sun size={16} style={{ color: 'var(--warning)' }} />
+            }
           </motion.div>
         </motion.button>
 
-        <div
-          className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-105"
-          style={{ backgroundColor: 'var(--accent)' }}
+        {/* Divider */}
+        <div style={{ width: 1, height: 22, background: 'rgba(255,255,255,0.1)' }} />
+
+        {/* Avatar */}
+        <motion.div
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.94 }}
+          style={{
+            width: 36, height: 36, borderRadius: '50%', cursor: 'pointer',
+            background: 'linear-gradient(135deg, var(--accent), #5b21b6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 0 0 2px rgba(124,58,237,0.35)',
+            flexShrink: 0,
+          }}
         >
-          <User className="w-5 h-5 text-white" />
-        </div>
+          <User size={16} color="#fff" />
+        </motion.div>
       </div>
     </header>
   );

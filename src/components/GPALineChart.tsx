@@ -1,4 +1,4 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { useState } from 'react';
 
 interface GPALineChartProps {
@@ -9,115 +9,129 @@ interface GPALineChartProps {
   }>;
 }
 
-export function GPALineChart({ data }: GPALineChartProps) {
-  const [hiddenSeries, setHiddenSeries] = useState<Set<string>>(new Set());
+const SERIES = [
+  { key: 'gpa', label: 'Semester GPA', color: 'var(--accent)' },
+  { key: 'cgpa', label: 'Cumulative CGPA', color: 'var(--accent-2)' },
+] as const;
 
-  const toggleSeries = (dataKey: string) => {
-    setHiddenSeries(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(dataKey)) {
-        newSet.delete(dataKey);
-      } else {
-        newSet.add(dataKey);
-      }
-      return newSet;
-    });
-  };
-
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div
-          className="p-3 rounded-lg border shadow-lg"
-          style={{
-            backgroundColor: 'var(--card)',
-            borderColor: 'var(--muted)',
-          }}
-        >
-          <p className="mb-2 font-bold" style={{ color: 'var(--text-primary)' }}>{label}</p>
-          {payload.map((entry: any) => (
-            <p key={entry.dataKey} style={{ color: entry.color }} className="text-sm">
-              {entry.name}: {entry.value.toFixed(3)}
-            </p>
-          ))}
+function CustomTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{
+      padding: '10px 14px', borderRadius: 12,
+      background: 'rgba(15,10,40,0.92)',
+      backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255,255,255,0.12)',
+      boxShadow: '0 12px 32px -8px rgba(0,0,0,0.6)',
+      minWidth: 140,
+    }}>
+      <p style={{ margin: '0 0 8px', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>
+        {label}
+      </p>
+      {payload.map((entry: any) => (
+        <div key={entry.dataKey} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: entry.color, flexShrink: 0 }} />
+            <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.55)' }}>{entry.name}</span>
+          </div>
+          <span style={{ fontSize: '0.875rem', fontWeight: 700, color: entry.color }}>
+            {entry.value.toFixed(2)}
+          </span>
         </div>
-      );
-    }
-    return null;
-  };
+      ))}
+    </div>
+  );
+}
+
+export function GPALineChart({ data }: GPALineChartProps) {
+  const [hidden, setHidden] = useState<Set<string>>(new Set());
+
+  const toggle = (key: string) =>
+    setHidden(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
 
   return (
     <div>
-      {/* Legend with toggles */}
-      <div className="flex gap-4 mb-4 justify-center">
-        <button
-          onClick={() => toggleSeries('gpa')}
-          className="flex items-center gap-2 px-3 py-1 rounded-lg transition-opacity hover:bg-muted/20"
-          style={{ opacity: hiddenSeries.has('gpa') ? 0.4 : 1 }}
-        >
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--chart-1)' }} />
-          <span className="text-sm" style={{ color: 'var(--text-primary)' }}>Semester GPA</span>
-        </button>
-        <button
-          onClick={() => toggleSeries('cgpa')}
-          className="flex items-center gap-2 px-3 py-1 rounded-lg transition-opacity hover:bg-muted/20"
-          style={{ opacity: hiddenSeries.has('cgpa') ? 0.4 : 1 }}
-        >
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--chart-2)' }} />
-          <span className="text-sm" style={{ color: 'var(--text-primary)' }}>Cumulative CGPA</span>
-        </button>
+      {/* interactive legend */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+        {SERIES.map(s => {
+          const off = hidden.has(s.key);
+          return (
+            <button
+              key={s.key}
+              onClick={() => toggle(s.key)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '5px 12px', borderRadius: 999, cursor: 'pointer',
+                border: `1px solid ${off ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.14)'}`,
+                background: off ? 'transparent' : 'rgba(255,255,255,0.05)',
+                opacity: off ? 0.45 : 1,
+                transition: 'all 0.2s ease', fontFamily: 'inherit',
+              }}
+            >
+              <div style={{
+                width: 24, height: 3, borderRadius: 99,
+                background: off ? 'rgba(255,255,255,0.2)' : s.color,
+                transition: 'background 0.2s ease',
+              }} />
+              <span style={{ fontSize: '0.75rem', fontWeight: 500, color: off ? 'var(--text-muted)' : 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+                {s.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
-      <ResponsiveContainer width="100%" height={350}>
-        {/* Sorting removed: data is used directly as passed from parent */}
-        <LineChart data={data} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--muted)" opacity={0.3} vertical={false} />
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={data} margin={{ top: 8, right: 16, left: -8, bottom: 4 }}>
+          <defs>
+            {SERIES.map(s => (
+              <linearGradient key={s.key} id={`grad-${s.key}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={s.color} stopOpacity={0.15} />
+                <stop offset="100%" stopColor={s.color} stopOpacity={0} />
+              </linearGradient>
+            ))}
+          </defs>
+
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="rgba(255,255,255,0.06)"
+            vertical={false}
+          />
+
           <XAxis
             dataKey="semester"
-            stroke="var(--text-secondary)"
-            tick={{ fill: 'var(--text-secondary)', fontSize: 11 }}
-            padding={{ left: 20, right: 20 }}
+            tick={{ fill: 'var(--text-muted)', fontSize: 11, fontFamily: 'inherit' }}
+            axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
+            tickLine={false}
+            padding={{ left: 16, right: 16 }}
           />
+
           <YAxis
-            // Dynamic scale: focuses on the relevant range (e.g., 7.5 to 10)
-            domain={[
-              (dataMin: number) => Math.max(0, Math.floor(dataMin - 0.5)),
-              10
-            ]}
-            stroke="var(--text-secondary)"
-            tick={{ fill: 'var(--text-secondary)', fontSize: 11 }}
-            label={{
-              value: 'GPA',
-              angle: -90,
-              position: 'insideLeft',
-              style: { fill: 'var(--text-secondary)', fontSize: 12 }
-            }}
+            domain={[(d: number) => Math.max(0, Math.floor(d - 0.5)), 10]}
+            tick={{ fill: 'var(--text-muted)', fontSize: 11, fontFamily: 'inherit' }}
+            axisLine={false}
+            tickLine={false}
+            width={32}
           />
-          <Tooltip content={<CustomTooltip />} />
 
-          {!hiddenSeries.has('gpa') && (
-            <Line
-              type="monotone"
-              dataKey="gpa"
-              stroke="var(--chart-1)"
-              strokeWidth={3}
-              dot={{ fill: 'var(--chart-1)', r: 5, strokeWidth: 2, stroke: 'var(--background)' }}
-              activeDot={{ r: 7 }}
-              name="Semester GPA"
-            />
-          )}
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '4 4' }} />
 
-          {!hiddenSeries.has('cgpa') && (
+          {SERIES.map(s => !hidden.has(s.key) && (
             <Line
+              key={s.key}
               type="monotone"
-              dataKey="cgpa"
-              stroke="var(--chart-2)"
-              strokeWidth={3}
-              dot={{ fill: 'var(--chart-2)', r: 5, strokeWidth: 2, stroke: 'var(--background)' }}
-              activeDot={{ r: 7 }}
-              name="Cumulative CGPA"
+              dataKey={s.key}
+              stroke={s.color}
+              strokeWidth={2.5}
+              dot={{ fill: s.color, r: 4, strokeWidth: 2, stroke: 'rgba(8,13,26,0.9)' }}
+              activeDot={{ r: 6, stroke: s.color, strokeWidth: 2, fill: 'rgba(8,13,26,0.9)' }}
+              name={s.label}
             />
-          )}
+          ))}
         </LineChart>
       </ResponsiveContainer>
     </div>
