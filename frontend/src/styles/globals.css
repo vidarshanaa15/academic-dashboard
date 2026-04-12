@@ -1,0 +1,253 @@
+@import "tailwindcss";
+
+/* ============================================
+   DESIGN TOKENS & CSS VARIABLES
+   ============================================
+   
+   Theme: Academic Dashboard
+   Base spacing: 4px (scale: 4, 8, 12, 16, 24, 32, 40, 48, 64, 80)
+   Font: Inter (variable) for UI, Source Code Pro for monospace
+   
+   Color Variables:
+   --bg: Main background
+   --surface: Secondary background (topbar, panels)
+   --card: Card background
+   --text-primary: Primary text color
+   --text-secondary: Secondary/muted text
+   --accent: Primary accent (cyan/blue)
+   --accent-2: Secondary accent (purple/teal)
+   --muted: Borders, dividers
+   --success: Success states
+   --danger: Error/warning states
+   --chart-*: Chart color palette
+   
+   ============================================ */
+
+:root {
+  /* Dark Theme (Default) */
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --card: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --accent: #06b6d4;
+  --accent-2: #a855f7;
+  --muted: #334155;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+
+  /* Chart colors */
+  --chart-1: #06b6d4;
+  --chart-2: #a855f7;
+  --chart-3: #10b981;
+  --chart-4: #f59e0b;
+  --chart-5: #ef4444;
+  --chart-6: #8b5cf6;
+
+  /* Grade colors */
+  --grade-o: #a855f7;
+  --grade-a-plus: #06b6d4;
+  --grade-a: #10b981;
+  --grade-b-plus: #f59e0b;
+  --grade-b: #fb923c;
+  --grade-c: #ef4444;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+
+  /* Spacing scale (in px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+}
+
+[data-theme="light"] {
+  /* Light Theme */
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --accent: #0c4a6e;
+  --accent-2: #0d9488;
+  --muted: #e5e7eb;
+  --success: #059669;
+  --danger: #dc2626;
+  --warning: #d97706;
+
+  /* Chart colors (adjusted for light theme) */
+  --chart-1: #0c4a6e;
+  --chart-2: #0d9488;
+  --chart-3: #059669;
+  --chart-4: #d97706;
+  --chart-5: #dc2626;
+  --chart-6: #7c3aed;
+
+  /* Grade colors (adjusted) */
+  --grade-o: #7c3aed;
+  --grade-a-plus: #0c4a6e;
+  --grade-a: #059669;
+  --grade-b-plus: #d97706;
+  --grade-b: #ea580c;
+  --grade-c: #dc2626;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   TYPOGRAPHY SYSTEM
+   ============================================ */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+h5 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+h6 {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+p {
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+small {
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+code,
+pre {
+  font-family: 'Source Code Pro', 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom scrollbar for charts and lists */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: var(--radius-sm);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.875rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+}
