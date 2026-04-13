@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { OnboardingTour } from './OnboardingTour';
+import Chatbot from './Chatbot';
 
 export function Layout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -57,7 +58,7 @@ export function Layout() {
           <Outlet />
         </main>
       </div>
-
+      <Chatbot />
       {/* Onboarding Tour */}
       <OnboardingTour />
     </div>
