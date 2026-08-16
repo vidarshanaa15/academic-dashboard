@@ -100,7 +100,7 @@ export function GradeBarChart({ data }: GradeBarChartProps) {
 
         <Tooltip
           content={<CustomTooltip total={total} />}
-          cursor={{ fill: 'rgba(255,255,255,0.04)', radius: 8 }}
+          cursor={{ fill: 'rgba(255,255,255,0.04)', radius: 6 }}
         />
 
         <Bar dataKey="count" radius={[8, 8, 3, 3]} maxBarSize={52}>

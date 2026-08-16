@@ -12,16 +12,14 @@ app.use(cors());
 app.use(express.json());
 
 app.post('/chat', async (req, res) => {
-    const { messages } = req.body;
+    const { messages, systemPrompt } = req.body;  // receive it from frontend
 
     const response = await client.chat.completions.create({
         model: 'llama-3.3-70b-versatile',
         messages: [
             {
                 role: 'system',
-                content: `You are a helpful academic advisor built into a student dashboard. 
-        Answer questions about grades, CGPA, study strategies, and academic goals.
-        Keep responses concise and encouraging.`,
+                content: systemPrompt,   // use the personalized one instead of hardcoded
             },
             ...messages,
         ],

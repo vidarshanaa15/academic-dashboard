@@ -11,7 +11,7 @@ interface GPALineChartProps {
 
 const SERIES = [
   { key: 'gpa', label: 'Semester GPA', color: 'var(--accent)' },
-  { key: 'cgpa', label: 'Cumulative CGPA', color: 'var(--accent-2)' },
+  { key: 'cgpa', label: 'CGPA', color: 'var(--accent-2)' },
 ] as const;
 
 function CustomTooltip({ active, payload, label }: any) {
