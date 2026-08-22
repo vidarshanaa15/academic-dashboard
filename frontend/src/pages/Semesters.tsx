@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Download, ChevronRight, Edit2, Loader2, Clock, Trash2, AlertTriangle, Search, BookOpen, TrendingUp } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Download, Upload, ChevronRight, Edit2, Loader2, Clock, Trash2, AlertTriangle, Search, BookOpen, TrendingUp } from 'lucide-react'; import { motion, AnimatePresence } from 'framer-motion';
 import { Modal } from '../components/Modal';
 import { CreditPieChart } from '../components/CreditPieChart';
 import { GradePieChart } from '../components/GradePieChart';
@@ -11,6 +10,7 @@ import { EmptyState } from '../components/EmptyState';
 import { fetchAcademicData, deleteSemesterFromDb } from '../lib/dataService';
 import { SemesterPDFPreview } from '../components/SemesterPDFPreview';
 import { exportSemesterPDF } from '../lib/exportSemesterPDF';
+import { UploadMarksheetModal } from '../components/UploadMarksheetModal';
 
 /* ── grade color maps (charts + badges only) ─────────────────── */
 const GRADE_COLORS: Record<string, string> = {
@@ -44,6 +44,7 @@ export function Semesters() {
   const pdfPreviewRef = useRef<HTMLDivElement>(null);
   const [pdfSemester, setPdfSemester] = useState<Semester | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -157,6 +158,9 @@ export function Semesters() {
               <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
               <input type="text" placeholder="Search semesters or courses…" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} style={{ paddingLeft: 36, paddingRight: 16, width: 240 }} />
             </div>
+            <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={() => setShowUploadModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 18px', borderRadius: 12, border: '1px solid var(--glass-border)', cursor: 'pointer', background: 'rgba(255,255,255,0.04)', color: 'var(--text-primary)', fontWeight: 600, fontSize: '0.875rem', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+              <Upload size={16} /> Upload Marksheet
+            </motion.button>
             <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={() => setShowAddModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 18px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg, var(--accent), #5b21b6)', color: '#fff', fontWeight: 600, fontSize: '0.875rem', fontFamily: 'inherit', boxShadow: '0 4px 16px -4px rgba(124,58,237,0.5)', whiteSpace: 'nowrap' }}>
               <Plus size={16} /> Add Semester
             </motion.button>
@@ -354,7 +358,7 @@ export function Semesters() {
           </div>
         )}
       </Modal>
-
+      <UploadMarksheetModal isOpen={showUploadModal} onClose={() => setShowUploadModal(false)} onAdd={handleAddSemester} />
       <AddSemesterModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} onAdd={handleAddSemester} />
 
       {editingSemester && (
