@@ -18,45 +18,35 @@ export async function exportSemesterPDF(
         style: {
             transform: `scale(${scale})`,
             transformOrigin: 'top left',
-            // Neutralise any oklch / modern color tokens on the root
             backgroundColor: '#ffffff',
             color: '#111827',
         },
     });
 
     const imgData = await blobToDataURL(blob);
+    const { width: blobW, height: blobH } = await getImageDimensions(imgData);
 
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const pageW = pdf.internal.pageSize.getWidth();   // 210
     const pageH = pdf.internal.pageSize.getHeight();  // 297
     const margin = 10;
-    const printW = pageW - margin * 2;
+    const maxW = pageW - margin * 2;
+    const maxH = pageH - margin * 2;
 
-    // Real pixel dims from the blob
-    const { width: blobW, height: blobH } = await getImageDimensions(imgData);
-    const printH = (blobH / blobW) * printW;
+    // Fit the whole capture into a single page, preserving aspect ratio.
+    // Try fitting to width first; if that overflows the page height, fit to height instead.
+    let printW = maxW;
+    let printH = (blobH / blobW) * printW;
 
-    // Paginate
-    let srcY = 0;
-    let first = true;
-
-    while (srcY < blobH) {
-        if (!first) pdf.addPage();
-        first = false;
-
-        // How many source-pixels fit on one page?
-        const sliceH = (pageH - margin * 2) * (blobW / printW);
-
-        pdf.addImage(
-            imgData, 'PNG',
-            margin,
-            margin - (srcY / blobH) * printH,   // shift image up by what's already printed
-            printW,
-            printH,
-        );
-
-        srcY += sliceH;
+    if (printH > maxH) {
+        printH = maxH;
+        printW = (blobW / blobH) * printH;
     }
+
+    const x = margin + (maxW - printW) / 2;
+    const y = margin + (maxH - printH) / 2;
+
+    pdf.addImage(imgData, 'PNG', x, y, printW, printH);
 
     pdf.save(`${semester.name.replace(/\s+/g, '_')}_Report.pdf`);
 }
