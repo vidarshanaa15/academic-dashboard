@@ -17,7 +17,47 @@ const noBorder: React.CSSProperties = {
     boxShadow: 'none',
 };
 
-interface Props { semester: Semester; }
+// ── Palettes ─────────────────────────────────────────────────────────────
+const LIGHT = {
+    background: '#ffffff',
+    textPrimary: '#111827',
+    textSecondary: '#374151',
+    textMuted: '#6b7280',
+    textFooter: '#9ca3af',
+    border: '#e5e7eb',
+    rowDivider: '#f3f4f6',
+    statValueDefault: '#111827',
+    inProgressBg: '#fef3c7',
+    inProgressText: '#92400e',
+};
+
+// Aligned with the app's actual dark theme tokens from globals.css
+// (--bg, --surface, --muted, --text-primary, --text-secondary, --warning)
+const DARK = {
+    background: '#0f172a',
+    textPrimary: '#f1f5f9',
+    textSecondary: '#cbd5e1',
+    textMuted: '#94a3b8',
+    textFooter: '#64748b',
+    border: '#334155',
+    rowDivider: '#1e293b',
+    statValueDefault: '#f1f5f9',
+    inProgressBg: 'rgba(245, 158, 11, 0.15)',
+    inProgressText: '#f59e0b',
+};
+
+// GPA/CGPA accents matched to --accent and --success from globals.css
+function getStatColors(isDark: boolean) {
+    return {
+        gpa: isDark ? '#06b6d4' : '#6366f1',
+        cgpa: isDark ? '#10b981' : '#10b981',
+    };
+}
+
+interface Props {
+    semester: Semester;
+    isDarkMode?: boolean;
+}
 
 function getCreditBreakdown(semester: Semester) {
     const breakdown: Record<string, number> = {
@@ -45,10 +85,12 @@ function SVGDonutChart({
     data,
     colors,
     title,
+    theme,
 }: {
     data: { name: string; value: number }[];
     colors: Record<string, string>;
     title: string;
+    theme: typeof LIGHT;
 }) {
     const SIZE = 190;
     const cx = SIZE / 2;
@@ -115,9 +157,14 @@ function SVGDonutChart({
     const legendStartY = SIZE + 6;
     const totalSVGH = legendStartY + legendRows * LEGEND_ROW_H + 2;
 
+    // donut slices need a stroke matching the card background so segments
+    // stay visually separated in both themes (white stroke would show as
+    // a halo on a dark background)
+    const sliceStroke = theme.background;
+
     return (
         <div style={{ ...noBorder, flex: 1, textAlign: 'center', padding: '16px 12px' }}>
-            <p style={{ ...noBorder, fontSize: 12, fontWeight: 600, color: '#6b7280', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <p style={{ ...noBorder, fontSize: 12, fontWeight: 600, color: theme.textMuted, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 {title}
             </p>
             <svg
@@ -127,7 +174,7 @@ function SVGDonutChart({
                 style={{ display: 'block', margin: '0 auto', border: 'none', outline: 'none' }}
             >
                 {slices.map((s, i) => (
-                    <path key={i} d={s.path} fill={s.color} stroke="#ffffff" strokeWidth={2} />
+                    <path key={i} d={s.path} fill={s.color} stroke={sliceStroke} strokeWidth={2} />
                 ))}
 
                 {slices.map((s, i) =>
@@ -140,7 +187,7 @@ function SVGDonutChart({
                             dominantBaseline="middle"
                             fontSize={10}
                             fontWeight="700"
-                            fill="#374151"
+                            fill={theme.textSecondary}
                         >
                             {Math.round(s.pct * 100)}%
                         </text>
@@ -156,7 +203,7 @@ function SVGDonutChart({
                     return (
                         <g key={i}>
                             <rect x={lx} y={ly + 1} width={9} height={9} rx={2} fill={s.color} />
-                            <text x={lx + 13} y={ly + 9} fontSize={9} fill="#374151">
+                            <text x={lx + 13} y={ly + 9} fontSize={9} fill={theme.textSecondary}>
                                 {s.name}
                             </text>
                         </g>
@@ -168,16 +215,19 @@ function SVGDonutChart({
 }
 
 export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
-    ({ semester }, ref) => {
+    ({ semester, isDarkMode = false }, ref) => {
+        const theme = isDarkMode ? DARK : LIGHT;
+        const statColors = getStatColors(isDarkMode);
+
         const totalCredits = semester.subjects.reduce((s, sub) => s + sub.credits, 0);
         const creditData = getCreditBreakdown(semester);
         const gradeData = getGradeBreakdown(semester);
 
         const stats = [
-            { label: 'Semester GPA', value: semester.gpa?.toFixed(2) ?? 'Pending', color: '#6366f1' },
-            { label: 'Cumulative CGPA', value: semester.cgpa?.toFixed(2) ?? '—', color: '#10b981' },
-            { label: 'Total Credits', value: String(totalCredits), color: '#111827' },
-            { label: 'Subjects', value: String(semester.subjects.length), color: '#111827' },
+            { label: 'Semester GPA', value: semester.gpa?.toFixed(2) ?? 'Pending', color: statColors.gpa },
+            { label: 'Cumulative CGPA', value: semester.cgpa?.toFixed(2) ?? '—', color: statColors.cgpa },
+            { label: 'Total Credits', value: String(totalCredits), color: theme.statValueDefault },
+            { label: 'Subjects', value: String(semester.subjects.length), color: theme.statValueDefault },
         ];
 
         return (
@@ -187,9 +237,9 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
                 style={{
                     width: 794,
                     padding: '32px 44px',
-                    backgroundColor: '#ffffff',
+                    backgroundColor: theme.background,
                     fontFamily: 'Inter, system-ui, sans-serif',
-                    color: '#111827',
+                    color: theme.textPrimary,
                     position: 'fixed',
                     top: '-9999px',
                     left: '-9999px',
@@ -202,15 +252,15 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
             >
                 {/* ── Header ───────────────────────────────────────────── */}
                 <div style={{ ...noBorder, marginBottom: 20 }}>
-                    <h1 style={{ ...noBorder, fontSize: 24, fontWeight: 700, color: '#111827', margin: 0 }}>
+                    <h1 style={{ ...noBorder, fontSize: 24, fontWeight: 700, color: theme.textPrimary, margin: 0 }}>
                         {semester.name}
                     </h1>
-                    <p style={{ ...noBorder, fontSize: 13, color: '#6b7280', marginTop: 3 }}>
+                    <p style={{ ...noBorder, fontSize: 13, color: theme.textMuted, marginTop: 3 }}>
                         {semester.term} {semester.year}
                         {semester.status === 'planned' && (
                             <span style={{
-                                marginLeft: 10, fontSize: 11, backgroundColor: '#fef3c7',
-                                color: '#92400e', borderRadius: 4, padding: '2px 8px',
+                                marginLeft: 10, fontSize: 11, backgroundColor: theme.inProgressBg,
+                                color: theme.inProgressText, borderRadius: 4, padding: '2px 8px',
                                 border: 'none', outline: 'none',
                             }}>
                                 In Progress
@@ -224,25 +274,25 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
                     {stats.map(stat => (
                         <div key={stat.label} style={{
                             flex: 1, textAlign: 'center',
-                            border: '1px solid #e5e7eb', borderRadius: 8,
+                            border: `1px solid ${theme.border}`, borderRadius: 8,
                             outline: 'none', boxShadow: 'none',
                             padding: '12px 8px',
                         }}>
-                            <p style={{ ...noBorder, fontSize: 11, color: '#6b7280', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{stat.label}</p>
+                            <p style={{ ...noBorder, fontSize: 11, color: theme.textMuted, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{stat.label}</p>
                             <p style={{ ...noBorder, fontSize: 20, fontWeight: 700, color: stat.color, margin: 0 }}>{stat.value}</p>
                         </div>
                     ))}
                 </div>
 
                 {/* ── Subjects ─────────────────────────────────────────── */}
-                <h2 style={{ ...noBorder, fontSize: 14, fontWeight: 600, marginBottom: 8, color: '#374151' }}>Subjects</h2>
+                <h2 style={{ ...noBorder, fontSize: 14, fontWeight: 600, marginBottom: 8, color: theme.textSecondary }}>Subjects</h2>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5, marginBottom: 26, border: 'none' }}>
                     <thead>
                         <tr>
                             {['Subject', 'Credits', 'Grade', 'Points', 'Type'].map(h => (
                                 <th key={h} style={{
                                     padding: '7px 12px', textAlign: 'left',
-                                    color: '#6b7280', fontWeight: 600, borderBottom: '1.5px solid #e5e7eb',
+                                    color: theme.textMuted, fontWeight: 600, borderBottom: `1.5px solid ${theme.border}`,
                                     borderTop: 'none', borderLeft: 'none', borderRight: 'none',
                                     fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em',
                                 }}>
@@ -254,13 +304,13 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
                     <tbody>
                         {semester.subjects.map((subject) => (
                             <tr key={subject.id}>
-                                <td style={{ padding: '7px 12px', color: '#111827', borderBottom: '1px solid #f3f4f6', borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
+                                <td style={{ padding: '7px 12px', color: theme.textPrimary, borderBottom: `1px solid ${theme.rowDivider}`, borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
                                     {subject.name}
                                 </td>
-                                <td style={{ padding: '7px 12px', color: '#374151', borderBottom: '1px solid #f3f4f6', borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
+                                <td style={{ padding: '7px 12px', color: theme.textSecondary, borderBottom: `1px solid ${theme.rowDivider}`, borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
                                     {subject.credits}
                                 </td>
-                                <td style={{ padding: '7px 12px', borderBottom: '1px solid #f3f4f6', borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
+                                <td style={{ padding: '7px 12px', borderBottom: `1px solid ${theme.rowDivider}`, borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
                                     {subject.grade ? (
                                         <span style={{
                                             backgroundColor: GRADE_COLORS[subject.grade] ?? '#6b7280',
@@ -271,13 +321,13 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
                                             {subject.grade}
                                         </span>
                                     ) : (
-                                        <span style={{ ...noBorder, color: '#9ca3af', fontSize: 11 }}>Pending</span>
+                                        <span style={{ ...noBorder, color: theme.textMuted, fontSize: 11 }}>Pending</span>
                                     )}
                                 </td>
-                                <td style={{ padding: '7px 12px', color: '#374151', borderBottom: '1px solid #f3f4f6', borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
+                                <td style={{ padding: '7px 12px', color: theme.textSecondary, borderBottom: `1px solid ${theme.rowDivider}`, borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
                                     {subject.grade ? gradeMapping[subject.grade] : '—'}
                                 </td>
-                                <td style={{ padding: '7px 12px', color: '#374151', fontSize: 12, borderBottom: '1px solid #f3f4f6', borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
+                                <td style={{ padding: '7px 12px', color: theme.textSecondary, fontSize: 12, borderBottom: `1px solid ${theme.rowDivider}`, borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
                                     {subject.tag}
                                 </td>
                             </tr>
@@ -288,23 +338,25 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
                 {/* ── Distribution ─────────────────────────────────────── */}
                 {(creditData.length > 0 || gradeData.length > 0) && (
                     <>
-                        <h2 style={{ ...noBorder, fontSize: 14, fontWeight: 600, marginBottom: 8, color: '#374151' }}>Distribution</h2>
+                        <h2 style={{ ...noBorder, fontSize: 14, fontWeight: 600, marginBottom: 8, color: theme.textSecondary }}>Distribution</h2>
                         <div style={{ ...noBorder, display: 'flex', gap: 16 }}>
                             {creditData.length > 0 && (
-                                <div style={{ flex: 1, border: '1px solid #e5e7eb', borderRadius: 8, outline: 'none', boxShadow: 'none' }}>
+                                <div style={{ flex: 1, border: `1px solid ${theme.border}`, borderRadius: 8, outline: 'none', boxShadow: 'none' }}>
                                     <SVGDonutChart
                                         data={creditData}
                                         colors={COURSE_TYPE_COLORS}
                                         title="Course Type"
+                                        theme={theme}
                                     />
                                 </div>
                             )}
                             {gradeData.length > 0 && (
-                                <div style={{ flex: 1, border: '1px solid #e5e7eb', borderRadius: 8, outline: 'none', boxShadow: 'none' }}>
+                                <div style={{ flex: 1, border: `1px solid ${theme.border}`, borderRadius: 8, outline: 'none', boxShadow: 'none' }}>
                                     <SVGDonutChart
                                         data={gradeData}
                                         colors={GRADE_COLORS}
                                         title="Grade Distribution"
+                                        theme={theme}
                                     />
                                 </div>
                             )}
@@ -312,12 +364,12 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
                     </>
                 )}
 
-                {/* ── Footer — borderless, single-line, no wrap ───────────── */}
+                {/* ── Footer ───────────────────────────────────────────── */}
                 <div style={{
                     ...noBorder,
-                    marginTop: 24, borderTop: '1px solid #e5e7eb',
+                    marginTop: 24, borderTop: `1px solid ${theme.border}`,
                     paddingTop: 10, display: 'flex', justifyContent: 'space-between',
-                    fontSize: 10.5, color: '#9ca3af',
+                    fontSize: 10.5, color: theme.textFooter,
                 }}>
                     <span style={{ ...noBorder, whiteSpace: 'nowrap' }}>Generated by GPA Tracker</span>
                     <span style={{ ...noBorder, whiteSpace: 'nowrap' }}>

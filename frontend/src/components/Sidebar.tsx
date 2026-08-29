@@ -29,11 +29,11 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,
-        /* glass sidebar */
-        background: 'rgba(8, 13, 26, 0.75)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        borderRight: '1px solid rgba(255,255,255,0.08)',
+        /* theme-aware sidebar surface — solid, not glassy */
+        background: 'var(--sidebar)',
+        backdropFilter: 'blur(14px)',
+        WebkitBackdropFilter: 'blur(14px)',
+        borderRight: '1px solid var(--glass-border)',
         overflow: 'hidden',
         zIndex: 40,
       }}
@@ -45,7 +45,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         alignItems: 'center',
         justifyContent: isCollapsed ? 'center' : 'flex-start',
         padding: isCollapsed ? '0' : '0 18px',
-        borderBottom: '1px solid rgba(255,255,255,0.07)',
+        borderBottom: '1px solid var(--glass-border)',
         flexShrink: 0,
         gap: 12,
       }}>
@@ -54,7 +54,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           width: 34, height: 34, borderRadius: 10, flexShrink: 0,
           background: 'linear-gradient(135deg, var(--accent), #5b21b6)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 14px -4px rgba(124,58,237,0.6)',
+          boxShadow: '0 4px 14px -4px var(--accent-glow)',
           fontSize: 16,
         }}>
           📚
@@ -127,11 +127,11 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                       transition: 'background 0.2s ease',
                       /* active vs inactive */
                       background: isActive
-                        ? 'rgba(124,58,237,0.2)'
+                        ? 'var(--accent-glow)'
                         : 'transparent',
                     }}
                     onMouseEnter={e => {
-                      if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
+                      if (!isActive) e.currentTarget.style.background = 'var(--glass-bg-hover)';
                     }}
                     onMouseLeave={e => {
                       if (!isActive) e.currentTarget.style.background = 'transparent';
@@ -192,18 +192,18 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
       </nav>
 
       {/* ── Collapse toggle ───────────────────────────────── */}
-      <div style={{ padding: '10px', borderTop: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
+      <div style={{ padding: '10px', borderTop: '1px solid var(--glass-border)', flexShrink: 0 }}>
         <button
           onClick={onToggle}
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--glass-bg-hover)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'var(--glass-bg)')}
           style={{
             width: '100%',
             display: 'flex', alignItems: 'center', justifyContent: isCollapsed ? 'center' : 'space-between',
             gap: 8, padding: '9px 12px', borderRadius: 10,
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'var(--glass-bg)',
+            border: '1px solid var(--glass-border)',
             cursor: 'pointer', transition: 'background 0.2s ease',
             color: 'var(--text-muted)', fontFamily: 'inherit',
           }}

@@ -43,6 +43,7 @@ export function Semesters() {
   const [exportingPDF, setExportingPDF] = useState(false);
   const pdfPreviewRef = useRef<HTMLDivElement>(null);
   const [pdfSemester, setPdfSemester] = useState<Semester | null>(null);
+  const [pdfIsDarkMode, setPdfIsDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showUploadModal, setShowUploadModal] = useState(false);
 
@@ -95,10 +96,12 @@ export function Semesters() {
 
   const handleExportPDF = async (semester: Semester) => {
     setExportingPDF(true);
+    const isDark = localStorage.getItem('theme') === 'dark';
+    setPdfIsDarkMode(isDark);
     setPdfSemester(semester);
     await new Promise(r => setTimeout(r, 300));
     try {
-      await exportSemesterPDF('semester-pdf-preview', semester);
+      await exportSemesterPDF('semester-pdf-preview', semester, isDark);
     } catch (err) {
       console.error('PDF export failed:', err);
     } finally {
@@ -406,7 +409,7 @@ export function Semesters() {
         )}
       </AnimatePresence>
 
-      {pdfSemester && <SemesterPDFPreview ref={pdfPreviewRef} semester={pdfSemester} />}
+      {pdfSemester && <SemesterPDFPreview ref={pdfPreviewRef} semester={pdfSemester} isDarkMode={pdfIsDarkMode} />}
     </div>
   );
 }

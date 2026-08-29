@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Target, Plus, Check, Trash2, AlertCircle, Loader2, Sparkles, ChevronUp, Flame, Minus } from 'lucide-react';
+import { Target, Plus, Check, Trash2, Loader2, Sparkles, ChevronUp, Flame, Minus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Modal } from '../components/Modal';
 import { fetchAcademicData, toggleGoalStatus, deleteGoalFromDb, addGoalToDb } from '../lib/dataService';
-import { getTotalCredits, type Goal, type Semester, gradeMapping } from '../data/sampleData';
+import { type Goal, type Semester } from '../data/sampleData';
 
 /* ── animation helpers ──────────────────────────────────────── */
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 18 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.4, delay, ease: [0.4, 0, 0.2, 1] },
+  transition: { duration: 0.4, delay, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] },
 });
 
 /* ── priority config ────────────────────────────────────────── */
@@ -46,8 +46,6 @@ export function Goals() {
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
-  const [targetGPA, setTargetGPA] = useState<string>('9.0');
-  const [remainingCredits, setRemainingCredits] = useState<string>('40');
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [newGoal, setNewGoal] = useState({
     title: '',
@@ -70,26 +68,8 @@ export function Goals() {
     loadData();
   }, []);
 
-  const totalCreditsCompleted = getTotalCredits(semesters);
-  const totalPoints = semesters.reduce((sum, sem) => {
-    const semPoints = sem.subjects?.reduce((subSum, sub) => {
-      const pointValue = gradeMapping[sub.grade ?? ''] ?? 0;
-      return subSum + sub.credits * pointValue;
-    }, 0) || 0;
-    return sum + semPoints;
-  }, 0);
-
-  const calculateRequiredGPA = () => {
-    const target = parseFloat(targetGPA) || 0;
-    const remaining = parseFloat(remainingCredits) || 0;
-    const total = totalCreditsCompleted + remaining;
-    if (remaining === 0) return 0;
-    return (target * total - totalPoints) / remaining;
-  };
-
-  const requiredGPA = calculateRequiredGPA();
-  const isAchievable = requiredGPA <= 10 && requiredGPA >= 0;
-  const difficulty = requiredGPA > 9 ? 'high' : requiredGPA > 7 ? 'medium' : 'low';
+  // semesters kept for potential future goal-progress features tied to academic data
+  void semesters;
 
   const completedCount = goals.filter(g => g.completed).length;
   const totalCount = goals.length;
@@ -145,12 +125,6 @@ export function Goals() {
       <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Syncing with cloud...</p>
     </div>
   );
-
-  /* result card colors */
-  const resultColor = isAchievable ? (difficulty === 'high' ? 'var(--warning)' : 'var(--success)') : 'var(--danger)';
-  const resultBorder = isAchievable ? (difficulty === 'high' ? 'rgba(245,158,11,0.25)' : 'rgba(16,185,129,0.25)') : 'rgba(239,68,68,0.25)';
-  const resultBg = isAchievable ? (difficulty === 'high' ? 'rgba(245,158,11,0.07)' : 'rgba(16,185,129,0.07)') : 'rgba(239,68,68,0.07)';
-  const resultIconBg = isAchievable ? (difficulty === 'high' ? 'rgba(245,158,11,0.18)' : 'rgba(16,185,129,0.18)') : 'rgba(239,68,68,0.18)';
 
   return (
     <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.75rem', maxWidth: 1100, margin: '0 auto' }}>
@@ -214,99 +188,8 @@ export function Goals() {
         </motion.div>
       )}
 
-      {/* ── Target CGPA Calculator ───────────────────────────── */}
-      <motion.div {...fadeUp(0.12)}>
-        <div className="glass-card" style={{ padding: '1.5rem', position: 'relative', overflow: 'hidden' }}>
-          {/* decorative blob */}
-          <div style={{
-            position: 'absolute', top: -50, right: -50, width: 180, height: 180,
-            borderRadius: '50%', pointerEvents: 'none',
-            background: 'radial-gradient(circle, rgba(124,58,237,0.14) 0%, transparent 70%)',
-          }} />
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1.25rem' }}>
-            <div style={{
-              width: 34, height: 34, borderRadius: 10, flexShrink: 0,
-              background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <Target size={16} style={{ color: 'var(--accent)' }} />
-            </div>
-            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-              Target CGPA Calculator
-            </h3>
-          </div>
-
-          {/* inputs */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
-            <div>
-              <FormLabel>Target Cumulative GPA (1–10)</FormLabel>
-              <input type="number" min="1" max="10" step="0.1" value={targetGPA} onChange={e => setTargetGPA(e.target.value)} />
-            </div>
-            <div>
-              <FormLabel>Remaining Credits</FormLabel>
-              <input type="number" min="0" value={remainingCredits} onChange={e => setRemainingCredits(e.target.value)} />
-            </div>
-          </div>
-
-          {/* result card */}
-          <div style={{ borderRadius: 14, padding: '1.25rem 1.4rem', border: `1px solid ${resultBorder}`, background: resultBg }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-              <div style={{
-                width: 40, height: 40, borderRadius: 10, flexShrink: 0,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: resultIconBg,
-              }}>
-                {isAchievable
-                  ? <Check size={18} style={{ color: resultColor }} />
-                  : <AlertCircle size={18} style={{ color: resultColor }} />
-                }
-              </div>
-
-              <div style={{ flex: 1 }}>
-                <p style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6, color: resultColor }}>
-                  {isAchievable ? 'Target is achievable' : 'Target not achievable'}
-                </p>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
-                  <span style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1, color: resultColor }}>
-                    {requiredGPA.toFixed(2)}
-                  </span>
-                  <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>required avg GPA</span>
-                </div>
-                <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: isAchievable ? 12 : 0 }}>
-                  {isAchievable
-                    ? `Maintain a ${requiredGPA.toFixed(2)} average across the remaining ${remainingCredits} credits to hit your target of ${targetGPA}.`
-                    : 'This target cannot be reached with the remaining credits. Try adjusting your target or consider retaking courses.'}
-                </p>
-                {isAchievable && (
-                  <span style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 5,
-                    padding: '4px 12px', borderRadius: 999, fontSize: '0.75rem', fontWeight: 600,
-                    background: difficulty === 'high' ? 'rgba(245,158,11,0.18)' : difficulty === 'medium' ? 'rgba(124,58,237,0.18)' : 'rgba(16,185,129,0.18)',
-                    color: difficulty === 'high' ? 'var(--warning)' : difficulty === 'medium' ? 'var(--accent)' : 'var(--success)',
-                  }}>
-                    {difficulty === 'high' ? '⚠ Challenging' : difficulty === 'medium' ? '◎ Moderate' : '✓ Easily Achievable'}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* formula breakdown */}
-            <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${resultBorder}` }}>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: 4, fontWeight: 500 }}>
-                Formula — Required Avg = (Target × Total Credits − Current Points) ÷ Remaining
-              </p>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>
-                ({targetGPA} × {totalCreditsCompleted + parseFloat(remainingCredits || '0')} − {totalPoints.toFixed(2)}) ÷ {remainingCredits}{' '}
-                = <strong style={{ color: 'var(--text-primary)' }}>{requiredGPA.toFixed(2)}</strong>
-              </p>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
       {/* ── Goals list ───────────────────────────────────────── */}
-      <motion.div {...fadeUp(0.18)}>
+      <motion.div {...fadeUp(0.14)}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: 8 }}>
           <SectionHeading>Your Goals</SectionHeading>
           {totalCount > 0 && (

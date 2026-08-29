@@ -4,13 +4,19 @@ import { type Semester } from '../data/sampleData';
 
 export async function exportSemesterPDF(
     containerId: string,
-    semester: Semester
+    semester: Semester,
+    isDarkMode: boolean = false
 ): Promise<void> {
     const element = document.getElementById(containerId);
     if (!element) throw new Error('PDF container not found');
 
-    // A4 at 96dpi = 794px wide; we render at 2× for sharpness
     const scale = 2;
+
+    // Match whatever theme the preview component actually rendered in —
+    // previously this was hardcoded to white/dark-text, which silently
+    // overrode dark mode and made the capture unreadable.
+    const captureBg = isDarkMode ? '#0f172a' : '#ffffff';
+    const captureText = isDarkMode ? '#f1f5f9' : '#111827';
 
     const blob = await domtoimage.toBlob(element, {
         width: element.offsetWidth * scale,
@@ -18,8 +24,8 @@ export async function exportSemesterPDF(
         style: {
             transform: `scale(${scale})`,
             transformOrigin: 'top left',
-            backgroundColor: '#ffffff',
-            color: '#111827',
+            backgroundColor: captureBg,
+            color: captureText,
         },
     });
 
@@ -27,14 +33,12 @@ export async function exportSemesterPDF(
     const { width: blobW, height: blobH } = await getImageDimensions(imgData);
 
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const pageW = pdf.internal.pageSize.getWidth();   // 210
-    const pageH = pdf.internal.pageSize.getHeight();  // 297
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
     const margin = 10;
     const maxW = pageW - margin * 2;
     const maxH = pageH - margin * 2;
 
-    // Fit the whole capture into a single page, preserving aspect ratio.
-    // Try fitting to width first; if that overflows the page height, fit to height instead.
     let printW = maxW;
     let printH = (blobH / blobW) * printW;
 
@@ -45,6 +49,14 @@ export async function exportSemesterPDF(
 
     const x = margin + (maxW - printW) / 2;
     const y = margin + (maxH - printH) / 2;
+
+    // Fill the full A4 page with the theme background first, so any
+    // margin around the centered image matches the theme instead of
+    // always showing white (jsPDF pages default to white).
+    if (isDarkMode) {
+        pdf.setFillColor(15, 23, 42); // #0f172a
+        pdf.rect(0, 0, pageW, pageH, 'F');
+    }
 
     pdf.addImage(imgData, 'PNG', x, y, printW, printH);
 

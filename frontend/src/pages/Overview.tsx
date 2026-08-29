@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Award, TrendingUp, BookOpen, GraduationCap, Loader2, Sparkles, ChevronUp, Target, Plus, Flame, Minus, ArrowRight } from 'lucide-react';
+import { Award, TrendingUp, BookOpen, GraduationCap, Loader2, Sparkles, ChevronUp, Target, Plus, Flame, Minus, ArrowRight, Clock, ChevronRight } from 'lucide-react';
 import { GPALineChart } from '../components/GPALineChart';
 import { GradeBarChart } from '../components/GradeBarChart';
 import { CreditPieChart } from '../components/CreditPieChart';
 import { motion } from 'framer-motion';
 import { fetchAcademicData } from '../lib/dataService';
-import { getTotalCredits, getGradeDistribution, getCreditBreakdown, getSubjectAreaPerformance, type Goal } from '../data/sampleData';
+import { getTotalCredits, getGradeDistribution, getCreditBreakdown, getSubjectAreaPerformance, type Goal, type Semester } from '../data/sampleData';
 
 /* ── animation variants ─────────────────────────────────────── */
 const fadeUp = (delay = 0) => ({
@@ -30,6 +30,18 @@ const GRADE_CHART_COLORS: Record<string, string> = {
   'B+': 'var(--chart-bp)', B: 'var(--chart-b)', C: 'var(--chart-c)',
 };
 
+/* background variants for the mini grade badges in the "This Semester" card */
+const GRADE_BG: Record<string, string> = {
+  O: 'var(--grade-o-bg)', 'A+': 'var(--grade-ap-bg)', A: 'var(--grade-a-bg)',
+  'B+': 'var(--grade-bp-bg)', B: 'var(--grade-b-bg)', C: 'var(--grade-c-bg)',
+};
+
+/* Shared fixed height for the "Performance Insights by Subject Area" and
+   "This Semester" cards so the two boxes always line up, regardless of how
+   many subject areas or subjects either one has to list (each scrolls
+   internally instead of growing the card). */
+const CARD_HEIGHT = 440;
+
 /* ── priority config (mirrors Goals page) ─────────────────────── */
 const PRIORITY_META = {
   High: { icon: Flame, color: 'var(--danger)', bg: 'var(--danger-muted)', border: 'rgba(239,68,68,0.25)' },
@@ -40,23 +52,25 @@ const PRIORITY_META = {
 /* ── subcomponents ──────────────────────────────────────────── */
 
 function StatCard({
-  title, value, subtitle, icon: Icon, accent = false, success = false,
+  title, value, subtitle, icon: Icon, accent = false, success = false, showTopLine = true,
 }: {
   title: string; value: string | number; subtitle: string;
-  icon: any; accent?: boolean; success?: boolean;
+  icon: any; accent?: boolean; success?: boolean; showTopLine?: boolean;
 }) {
   return (
     <div className="glass-card" style={{ padding: '1.4rem 1.5rem', position: 'relative', overflow: 'hidden', height: '100%' }}>
       {/* top glow line */}
-      <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
-        background: accent
-          ? 'linear-gradient(90deg, var(--accent), var(--accent-2))'
-          : success
-            ? 'linear-gradient(90deg, var(--success), #34d399)'
-            : 'linear-gradient(90deg, rgba(255,255,255,0.15), transparent)',
-        borderRadius: '18px 18px 0 0',
-      }} />
+      {showTopLine && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
+          background: accent
+            ? 'linear-gradient(90deg, var(--accent), var(--accent-2))'
+            : success
+              ? 'linear-gradient(90deg, var(--success), #34d399)'
+              : 'linear-gradient(90deg, rgba(255,255,255,0.15), transparent)',
+          borderRadius: '18px 18px 0 0',
+        }} />
+      )}
 
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1rem' }}>
         <p className="stat-label">{title}</p>
@@ -128,7 +142,7 @@ function UpcomingGoalCard({
       className="glass-card"
       style={{
         padding: '1.4rem 1.5rem', position: 'relative', overflow: 'hidden', height: '100%',
-        width: '100%', textAlign: 'left', cursor: 'pointer', border: 'none', background: 'transparent',
+        width: '100%', textAlign: 'left', cursor: 'pointer',
         fontFamily: 'inherit', display: 'block',
       }}
     >
@@ -177,6 +191,137 @@ function UpcomingGoalCard({
   );
 }
 
+/* "This Semester" tile: a compact view of the current (in-progress, or most
+   recent) semester's subjects/grades. Clicking routes to the Semesters page
+   with that semester's id in navigation state so it can be auto-opened. */
+function ThisSemesterCard({
+  semester, onClick,
+}: {
+  semester: Semester | null; onClick: () => void;
+}) {
+  if (!semester) {
+    return (
+      <button
+        onClick={onClick}
+        className="glass-card"
+        style={{
+          padding: '1.4rem 1.5rem', position: 'relative', overflow: 'hidden', height: CARD_HEIGHT,
+          width: '100%', textAlign: 'left', cursor: 'pointer', border: '1px dashed var(--glass-border)',
+          background: 'rgba(124,58,237,0.05)', fontFamily: 'inherit',
+          display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 10,
+        }}
+      >
+        <div style={{
+          width: 36, height: 36, borderRadius: 10, display: 'flex',
+          alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.3)',
+        }}>
+          <Plus size={16} style={{ color: 'var(--accent)' }} />
+        </div>
+        <p style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, textAlign: 'center' }}>
+          Add a Semester
+        </p>
+        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, textAlign: 'center' }}>
+          Start tracking your current term
+        </p>
+      </button>
+    );
+  }
+
+  const isPlanned = semester.status === 'planned';
+  const credits = semester.subjects.reduce((s, sub) => s + sub.credits, 0);
+
+  return (
+    <button
+      onClick={onClick}
+      className="glass-card"
+      style={{
+        padding: '1.4rem 1.5rem', position: 'relative', overflow: 'hidden', height: CARD_HEIGHT, maxHeight: CARD_HEIGHT,
+        width: '100%', textAlign: 'left', cursor: 'pointer',
+        fontFamily: 'inherit', display: 'flex', flexDirection: 'column',
+      }}
+    >
+      {/* top glow line */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
+        background: isPlanned
+          ? 'linear-gradient(90deg, var(--warning), #fcd34d)'
+          : 'linear-gradient(90deg, var(--accent), var(--accent-2))',
+        borderRadius: '18px 18px 0 0',
+      }} />
+
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.9rem' }}>
+        <div>
+          <p className="stat-label" style={{ marginBottom: 3 }}>This Semester</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{semester.name}</h4>
+            {isPlanned && (
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 999,
+                fontSize: '0.6875rem', fontWeight: 600, background: 'rgba(245,158,11,0.15)', color: 'var(--warning)',
+                border: '1px solid rgba(245,158,11,0.25)',
+              }}>
+                <Clock size={10} /> In Progress
+              </span>
+            )}
+          </div>
+        </div>
+        <ChevronRight size={16} style={{ color: 'var(--text-muted)', flexShrink: 0, marginTop: 4 }} />
+      </div>
+
+      {/* quick stat row */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: '1rem' }}>
+        <div className="glass-inner" style={{ padding: '0.6rem', borderRadius: 10, textAlign: 'center' }}>
+          <p style={{ fontSize: '0.6rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: 3 }}>GPA</p>
+          {semester.gpa != null
+            ? <p style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--accent)', margin: 0, letterSpacing: '-0.02em' }}>{semester.gpa.toFixed(2)}</p>
+            : <p style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--warning)', margin: 0 }}>Pending</p>}
+        </div>
+        <div className="glass-inner" style={{ padding: '0.6rem', borderRadius: 10, textAlign: 'center' }}>
+          <p style={{ fontSize: '0.6rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: 3 }}>Subjects</p>
+          <p style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.02em' }}>{semester.subjects.length}</p>
+        </div>
+        <div className="glass-inner" style={{ padding: '0.6rem', borderRadius: 10, textAlign: 'center' }}>
+          <p style={{ fontSize: '0.6rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: 3 }}>Credits</p>
+          <p style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.02em' }}>{credits}</p>
+        </div>
+      </div>
+
+      {/* mini subject/grade list */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, overflowY: 'auto', paddingRight: 4, flex: 1, minHeight: 0 }}>
+        {semester.subjects.map(sub => (
+          <div
+            key={sub.id}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+              padding: '6px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.03)',
+            }}
+          >
+            <span style={{
+              fontSize: '0.8125rem', color: 'var(--text-secondary)', overflow: 'hidden',
+              textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>
+              {sub.name}
+            </span>
+            {sub.grade
+              ? (
+                <span style={{
+                  flexShrink: 0, display: 'inline-flex', padding: '2px 8px', borderRadius: 999,
+                  fontSize: '0.6875rem', fontWeight: 700,
+                  background: GRADE_BG[sub.grade] || 'rgba(255,255,255,0.08)',
+                  color: GRADE_CHART_COLORS[sub.grade] || 'var(--text-primary)',
+                }}>
+                  {sub.grade}
+                </span>
+              )
+              : <span style={{ flexShrink: 0, fontSize: '0.6875rem', color: 'var(--text-muted)' }}>Pending</span>}
+          </div>
+        ))}
+      </div>
+    </button>
+  );
+}
+
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1.25rem' }}>
@@ -209,21 +354,29 @@ export function Overview() {
   const semesters = academicData?.semesters || [];
   const goals = academicData?.goals || [];
 
+  // Numeric rank helper shared by the chart sort and the "current semester" lookup.
+  // "Semester N" sorts numerically; anything without a number is treated as
+  // farthest out so real semesters take priority.
+  const semesterRank = (s: string) => {
+    const n = parseInt(s.replace(/\D/g, ''), 10);
+    return Number.isNaN(n) ? Infinity : n;
+  };
+
   const gpaChartData = useMemo(() => {
     if (!semesters.length) return [];
     return [...semesters]
-      .sort((a, b) => (parseInt(a.name.replace(/\D/g, '')) || 0) - (parseInt(b.name.replace(/\D/g, '')) || 0))
-      .map(sem => ({ semester: sem.name, gpa: sem.gpa || 0, cgpa: sem.cgpa || 0 }));
+      // Bug fix: an in-progress semester has gpa/cgpa === null until grades are
+      // finalized. Previously `sem.gpa || 0` coerced that null to 0, which made
+      // the line chart plummet to zero for the newest semester. Instead, we
+      // simply exclude semesters that don't have computed values yet — the
+      // chart should only ever plot real GPA/CGPA points.
+      .filter(sem => sem.gpa != null && sem.cgpa != null)
+      .sort((a, b) => semesterRank(a.name) - semesterRank(b.name))
+      .map(sem => ({ semester: sem.name, gpa: sem.gpa, cgpa: sem.cgpa }));
   }, [semesters]);
 
   const upcomingGoal = useMemo(() => {
     const priorityOrder: Record<string, number> = { High: 0, Medium: 1, Low: 2 };
-    // "Semester N" sorts numerically; anything without a number (e.g. "End of Year")
-    // is treated as farthest out so real semesters take priority.
-    const semesterRank = (s: string) => {
-      const n = parseInt(s.replace(/\D/g, ''), 10);
-      return Number.isNaN(n) ? Infinity : n;
-    };
     const incomplete = goals.filter(g => !g.completed);
     if (!incomplete.length) return null;
     return [...incomplete].sort((a, b) => {
@@ -232,6 +385,16 @@ export function Overview() {
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     })[0];
   }, [goals]);
+
+  // The semester to feature in "This Semester": prefer the one currently in
+  // progress (status === 'planned'); otherwise fall back to the most recent
+  // completed semester by semester number.
+  const currentSemester = useMemo(() => {
+    if (!semesters.length) return null;
+    const ongoing = semesters.find(sem => sem.status === 'planned');
+    if (ongoing) return ongoing;
+    return [...semesters].sort((a, b) => semesterRank(b.name) - semesterRank(a.name))[0] ?? null;
+  }, [semesters]);
 
   if (loading) {
     return (
@@ -304,7 +467,7 @@ export function Overview() {
           fit a user-authored goal title. */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
         {[
-          { title: 'Current CGPA', value: currentCGPA.toFixed(2), subtitle: 'Out of 10.0', icon: GraduationCap, accent: true },
+          { title: 'Current CGPA', value: currentCGPA.toFixed(2), subtitle: 'Out of 10.0', icon: GraduationCap, accent: true, showTopLine: false },
           { title: 'Credits Completed', value: totalCredits, subtitle: `${creditsRemaining} remaining`, icon: BookOpen },
           { title: 'Semesters Completed', value: semestersCompleted, subtitle: '5 remaining', icon: TrendingUp },
         ].map((card, i) => (
@@ -428,86 +591,113 @@ export function Overview() {
         </motion.div>
       </div>
 
-      {/* ── Subject area performance ─────────────────────────── */}
-      <motion.div {...fadeUp(0.4)}>
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <SectionHeading>Performance Insights by Subject Area</SectionHeading>
+      {/* ── Subject area performance (now half-width) + This Semester ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1rem', alignItems: 'stretch' }}>
+        <motion.div {...fadeUp(0.4)}>
+          <div className="glass-card" style={{ padding: '1.5rem', height: CARD_HEIGHT, maxHeight: CARD_HEIGHT, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <SectionHeading>Performance Insights by Subject Area</SectionHeading>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {subjectAreaPerformance.map((area, index) => {
-              const isTop = index === 0;
-              const isBottom = index === subjectAreaPerformance.length - 1;
-              const fillPct = (area.average / maxAreaAvg) * 100;
+            <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', paddingRight: 4 }}>
+              {subjectAreaPerformance.map((area, index) => {
+                const isTop = index === 0;
+                const isBottom = index === subjectAreaPerformance.length - 1;
+                const fillPct = (area.average / maxAreaAvg) * 100;
+                const isLast = index === subjectAreaPerformance.length - 1;
 
-              return (
-                <div
-                  key={area.area}
-                  className="glass-inner"
-                  style={{ padding: '0.9rem 1.1rem' }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, gap: 8, flexWrap: 'wrap' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      {/* rank pill */}
-                      <span style={{
-                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                        width: 26, height: 26, borderRadius: '50%', fontSize: '0.6875rem', fontWeight: 700,
-                        background: isTop ? 'var(--success-muted)' : isBottom ? 'var(--warning-muted)' : 'rgba(255,255,255,0.07)',
-                        color: isTop ? 'var(--success)' : isBottom ? 'var(--warning)' : 'var(--text-secondary)',
-                        flexShrink: 0,
-                      }}>
-                        {index + 1}
-                      </span>
-                      <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)' }}>
-                        {area.area}
-                      </span>
+                return (
+                  <div
+                    key={area.area}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 10, padding: '9px 2px',
+                      borderBottom: isLast ? 'none' : '1px solid var(--glass-border)',
+                    }}
+                  >
+                    {/* rank pill */}
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      width: 22, height: 22, borderRadius: '50%', fontSize: '0.625rem', fontWeight: 700,
+                      background: isTop ? 'var(--success-muted)' : isBottom ? 'var(--warning-muted)' : 'rgba(255,255,255,0.07)',
+                      color: isTop ? 'var(--success)' : isBottom ? 'var(--warning)' : 'var(--text-secondary)',
+                      flexShrink: 0,
+                    }}>
+                      {index + 1}
+                    </span>
+
+                    {/* area name */}
+                    <span style={{
+                      fontSize: '0.8125rem', fontWeight: 500, color: 'var(--text-primary)',
+                      flex: '0 0 88px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }} title={area.area}>
+                      {area.area}
+                    </span>
+
+                    {/* inline progress bar */}
+                    <div className="progress-track" style={{ height: 6, flex: 1 }}>
+                      <div
+                        style={{
+                          height: '100%', width: `${fillPct}%`,
+                          borderRadius: 99, transition: 'width 0.6s ease',
+                          background: isTop
+                            ? 'linear-gradient(90deg, var(--success), #34d399)'
+                            : isBottom
+                              ? 'linear-gradient(90deg, var(--warning), #fcd34d)'
+                              : 'linear-gradient(90deg, var(--accent), var(--accent-2))',
+                        }}
+                      />
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {/* score */}
+                    <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text-primary)', flexShrink: 0, width: 34, textAlign: 'right' }}>
+                      {area.average.toFixed(2)}
+                    </span>
+
+                    {/* strength/opportunity indicator */}
+                    <span style={{ width: 14, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
                       {isTop && (
-                        <span style={{
-                          fontSize: '0.6875rem', fontWeight: 600, padding: '2px 8px',
-                          borderRadius: 999, background: 'var(--success-muted)', color: 'var(--success)',
-                          display: 'flex', alignItems: 'center', gap: 3,
-                        }}>
-                          <ChevronUp size={11} /> Strength
+                        <span title="Strength — your best-performing subject area" style={{ display: 'flex', cursor: 'help' }}>
+                          <ChevronUp size={13} style={{ color: 'var(--success)' }} />
                         </span>
                       )}
                       {isBottom && (
-                        <span style={{
-                          fontSize: '0.6875rem', fontWeight: 600, padding: '2px 8px',
-                          borderRadius: 999, background: 'var(--warning-muted)', color: 'var(--warning)',
-                          display: 'flex', alignItems: 'center', gap: 3,
-                        }}>
-                          <Target size={11} /> Opportunity
+                        <span title="Improvement opportunity — your lowest-performing subject area" style={{ display: 'flex', cursor: 'help' }}>
+                          <Target size={12} style={{ color: 'var(--warning)' }} />
                         </span>
                       )}
-                      <span style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                        {area.average.toFixed(2)}
-                      </span>
-                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>/ 10</span>
-                    </div>
+                    </span>
                   </div>
+                );
+              })}
+            </div>
 
-                  {/* mini progress bar */}
-                  <div className="progress-track" style={{ height: 7 }}>
-                    <div
-                      style={{
-                        height: '100%', width: `${fillPct}%`,
-                        borderRadius: 99, transition: 'width 0.6s ease',
-                        background: isTop
-                          ? 'linear-gradient(90deg, var(--success), #34d399)'
-                          : isBottom
-                            ? 'linear-gradient(90deg, var(--warning), #fcd34d)'
-                            : 'linear-gradient(90deg, var(--accent), var(--accent-2))',
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+            {/* legend — explains the strength/opportunity icons since the
+                symbols alone can be ambiguous */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
+              paddingTop: 10, marginTop: 6, borderTop: '1px solid var(--glass-border)', flexShrink: 0,
+            }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
+                <ChevronUp size={12} style={{ color: 'var(--success)' }} /> Strength
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
+                <Target size={11} style={{ color: 'var(--warning)' }} /> Improvement opportunity
+              </span>
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+
+        <motion.div {...fadeUp(0.45)}>
+          <ThisSemesterCard
+            semester={currentSemester}
+            onClick={() => {
+              if (!currentSemester) {
+                navigate('/semesters');
+                return;
+              }
+              navigate('/semesters', { state: { openSemesterId: currentSemester.id } });
+            }}
+          />
+        </motion.div>
+      </div>
 
     </div>
   );
