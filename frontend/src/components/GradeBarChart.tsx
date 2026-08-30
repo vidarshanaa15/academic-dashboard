@@ -33,10 +33,10 @@ function CustomTooltip({ active, payload, total }: any) {
   return (
     <div style={{
       padding: '10px 14px', borderRadius: 12, minWidth: 150,
-      background: 'rgba(15,10,40,0.92)',
+      background: 'var(--tooltip-bg)',
       backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255,255,255,0.12)',
-      boxShadow: '0 12px 32px -8px rgba(0,0,0,0.6)',
+      border: '1px solid var(--glass-border)',
+      boxShadow: 'var(--shadow-lg)',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
         <div style={{ width: 10, height: 10, borderRadius: '50%', background: color, flexShrink: 0 }} />
@@ -79,14 +79,14 @@ export function GradeBarChart({ data }: GradeBarChartProps) {
 
         <CartesianGrid
           strokeDasharray="3 3"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="var(--glass-border)"
           vertical={false}
         />
 
         <XAxis
           dataKey="grade"
           tick={{ fill: 'var(--text-muted)', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}
-          axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
+          axisLine={{ stroke: 'var(--glass-border)' }}
           tickLine={false}
         />
 
@@ -100,7 +100,7 @@ export function GradeBarChart({ data }: GradeBarChartProps) {
 
         <Tooltip
           content={<CustomTooltip total={total} />}
-          cursor={{ fill: 'rgba(255,255,255,0.04)', radius: 6 }}
+          cursor={{ fill: 'var(--glass-bg)', radius: 6 }}
         />
 
         <Bar dataKey="count" radius={[8, 8, 3, 3]} maxBarSize={52}>

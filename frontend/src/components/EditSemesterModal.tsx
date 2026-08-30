@@ -117,11 +117,11 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
       {confirmDeleteSubjectId && confirmSubjectToDelete && (
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+          style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-            style={{ width: '100%', maxWidth: 380, padding: '1.5rem', background: 'rgba(15,10,40,0.95)', backdropFilter: 'blur(24px)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 18, boxShadow: '0 24px 60px -12px rgba(0,0,0,0.7)' }}
+            style={{ width: '100%', maxWidth: 380, padding: '1.5rem', background: 'var(--card-strong)', backdropFilter: 'blur(24px)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 18, boxShadow: 'var(--shadow-lg)' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '0.875rem' }}>
               <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -136,7 +136,7 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
               Delete <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{confirmSubjectToDelete.name}</span>? This will also recompute your GPA.
             </p>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => setConfirmDeleteSubjectId(null)} style={{ flex: 1, padding: '9px', borderRadius: 10, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.875rem', fontWeight: 600, background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'var(--text-secondary)', transition: 'all 0.2s ease' }}>Cancel</button>
+              <button onClick={() => setConfirmDeleteSubjectId(null)} style={{ flex: 1, padding: '9px', borderRadius: 10, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.875rem', fontWeight: 600, background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--text-secondary)', transition: 'all 0.2s ease' }}>Cancel</button>
               <button onClick={handleConfirmDeleteSubject} style={{ flex: 1, padding: '9px', borderRadius: 10, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.875rem', fontWeight: 600, background: 'linear-gradient(135deg, #ef4444, #dc2626)', border: 'none', color: '#fff', boxShadow: '0 4px 14px -4px rgba(239,68,68,0.5)', transition: 'all 0.2s ease' }}>Delete</button>
             </div>
           </motion.div>
@@ -152,7 +152,7 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
           {/* Status badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid var(--glass-border)', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', flexWrap: 'wrap' }}>
             <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>Status</span>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 5,
@@ -174,7 +174,7 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
           <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid var(--glass-border)' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.04)' }}>
+                <tr style={{ background: 'var(--glass-bg)' }}>
                   {['Subject', 'Credits', 'Tag', 'Grade', ''].map(h => (
                     <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>{h}</th>
                   ))}
@@ -191,7 +191,7 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
                         key={subject.id}
                         initial={{ opacity: 1 }} exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.2 }}
-                        style={{ borderTop: '1px solid var(--glass-border)', background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)' }}
+                        style={{ borderTop: '1px solid var(--glass-border)', background: i % 2 === 0 ? 'transparent' : 'rgba(128,128,128,0.05)' }}
                       >
                         <td style={{ padding: '11px 12px', fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: 500 }}>
                           <span>{subject.name}</span>
@@ -338,12 +338,12 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
                 ? 'linear-gradient(135deg, var(--success), #059669)'
                 : hasChanges
                   ? 'linear-gradient(135deg, var(--accent), #5b21b6)'
-                  : 'rgba(255,255,255,0.06)',
+                  : 'var(--glass-bg)',
               opacity: saving || !hasChanges ? 0.6 : 1,
               boxShadow: saved
                 ? '0 6px 20px -4px rgba(16,185,129,0.5)'
                 : hasChanges
-                  ? '0 6px 20px -4px rgba(124,58,237,0.5)'
+                  ? '0 6px 20px -4px var(--accent-glow)'
                   : 'none',
               transition: 'all 0.3s ease',
             }}

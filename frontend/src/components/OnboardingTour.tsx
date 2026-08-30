@@ -66,7 +66,7 @@ export function OnboardingTour() {
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={handleClose}
-            style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
+            style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
           />
 
           {/* card */}
@@ -80,12 +80,12 @@ export function OnboardingTour() {
               position: 'fixed', top: '50%', left: '50%',
               transform: 'translate(-50%, -50%)',
               zIndex: 50, width: '100%', maxWidth: 420,
-              /* glass card */
-              background: 'rgba(12,8,32,0.92)',
+              /* theme-aware card */
+              background: 'var(--card-strong)',
               backdropFilter: 'blur(28px)', WebkitBackdropFilter: 'blur(28px)',
               border: '1px solid rgba(124,58,237,0.35)',
               borderRadius: 20,
-              boxShadow: '0 32px 80px -16px rgba(0,0,0,0.8), 0 0 60px -20px rgba(124,58,237,0.3)',
+              boxShadow: 'var(--shadow-lg), 0 0 60px -20px var(--accent-glow)',
               overflow: 'hidden',
             }}
           >
@@ -117,9 +117,9 @@ export function OnboardingTour() {
 
                 <button
                   onClick={handleClose}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
-                  style={{ width: 30, height: 30, borderRadius: 8, border: 'none', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background 0.15s ease' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--glass-bg-hover)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--glass-bg)')}
+                  style={{ width: 30, height: 30, borderRadius: 8, border: 'none', cursor: 'pointer', background: 'var(--glass-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background 0.15s ease' }}
                   aria-label="Close tour"
                 >
                   <X size={14} style={{ color: 'var(--text-muted)' }} />
@@ -139,7 +139,7 @@ export function OnboardingTour() {
                       flex: 1, height: 3, borderRadius: 99,
                       background: i <= currentStep
                         ? 'linear-gradient(90deg, var(--accent), var(--accent-2))'
-                        : 'rgba(255,255,255,0.1)',
+                        : 'var(--glass-border)',
                     }}
                     animate={{ opacity: i <= currentStep ? 1 : 0.5 }}
                     transition={{ duration: 0.3 }}
@@ -151,9 +151,9 @@ export function OnboardingTour() {
               <div style={{ display: 'flex', gap: 10 }}>
                 <button
                   onClick={handleClose}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
-                  style={{ flex: 1, padding: '10px', borderRadius: 10, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.875rem', fontWeight: 600, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-secondary)', transition: 'background 0.15s ease' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--glass-bg-hover)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--glass-bg)')}
+                  style={{ flex: 1, padding: '10px', borderRadius: 10, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.875rem', fontWeight: 600, background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--text-secondary)', transition: 'background 0.15s ease' }}
                 >
                   Skip Tour
                 </button>
@@ -167,7 +167,7 @@ export function OnboardingTour() {
                     border: 'none', color: '#fff',
                     background: 'linear-gradient(135deg, var(--accent), #5b21b6)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                    boxShadow: '0 4px 14px -4px rgba(124,58,237,0.5)',
+                    boxShadow: '0 4px 14px -4px var(--accent-glow)',
                     transition: 'box-shadow 0.2s ease',
                   }}
                 >

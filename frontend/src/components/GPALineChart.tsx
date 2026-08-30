@@ -19,20 +19,20 @@ function CustomTooltip({ active, payload, label }: any) {
   return (
     <div style={{
       padding: '10px 14px', borderRadius: 12,
-      background: 'rgba(15,10,40,0.92)',
+      background: 'var(--tooltip-bg)',
       backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255,255,255,0.12)',
-      boxShadow: '0 12px 32px -8px rgba(0,0,0,0.6)',
+      border: '1px solid var(--glass-border)',
+      boxShadow: 'var(--shadow-lg)',
       minWidth: 140,
     }}>
-      <p style={{ margin: '0 0 8px', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>
+      <p style={{ margin: '0 0 8px', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
         {label}
       </p>
       {payload.map((entry: any) => (
         <div key={entry.dataKey} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: entry.color, flexShrink: 0 }} />
-            <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.55)' }}>{entry.name}</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{entry.name}</span>
           </div>
           <span style={{ fontSize: '0.875rem', fontWeight: 700, color: entry.color }}>
             {entry.value.toFixed(2)}
@@ -66,15 +66,15 @@ export function GPALineChart({ data }: GPALineChartProps) {
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '5px 12px', borderRadius: 999, cursor: 'pointer',
-                border: `1px solid ${off ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.14)'}`,
-                background: off ? 'transparent' : 'rgba(255,255,255,0.05)',
+                border: `1px solid ${off ? 'var(--glass-border)' : 'var(--glass-border-hover)'}`,
+                background: off ? 'transparent' : 'var(--glass-bg)',
                 opacity: off ? 0.45 : 1,
                 transition: 'all 0.2s ease', fontFamily: 'inherit',
               }}
             >
               <div style={{
                 width: 24, height: 3, borderRadius: 99,
-                background: off ? 'rgba(255,255,255,0.2)' : s.color,
+                background: off ? 'var(--text-muted)' : s.color,
                 transition: 'background 0.2s ease',
               }} />
               <span style={{ fontSize: '0.75rem', fontWeight: 500, color: off ? 'var(--text-muted)' : 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
@@ -98,14 +98,14 @@ export function GPALineChart({ data }: GPALineChartProps) {
 
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="rgba(255,255,255,0.06)"
+            stroke="var(--glass-border)"
             vertical={false}
           />
 
           <XAxis
             dataKey="semester"
             tick={{ fill: 'var(--text-muted)', fontSize: 11, fontFamily: 'inherit' }}
-            axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
+            axisLine={{ stroke: 'var(--glass-border)' }}
             tickLine={false}
             padding={{ left: 16, right: 16 }}
           />
@@ -118,7 +118,7 @@ export function GPALineChart({ data }: GPALineChartProps) {
             width={32}
           />
 
-          <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '4 4' }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'var(--glass-border-hover)', strokeWidth: 1, strokeDasharray: '4 4' }} />
 
           {SERIES.map(s => !hidden.has(s.key) && (
             <Line
@@ -127,8 +127,8 @@ export function GPALineChart({ data }: GPALineChartProps) {
               dataKey={s.key}
               stroke={s.color}
               strokeWidth={2.5}
-              dot={{ fill: s.color, r: 4, strokeWidth: 2, stroke: 'rgba(8,13,26,0.9)' }}
-              activeDot={{ r: 6, stroke: s.color, strokeWidth: 2, fill: 'rgba(8,13,26,0.9)' }}
+              dot={{ fill: s.color, r: 4, strokeWidth: 2, stroke: 'var(--bg)' }}
+              activeDot={{ r: 6, stroke: s.color, strokeWidth: 2, fill: 'var(--bg)' }}
               name={s.label}
             />
           ))}

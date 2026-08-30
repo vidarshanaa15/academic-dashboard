@@ -36,7 +36,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
             onClick={onClose}
             style={{
               position: 'fixed', inset: 0, zIndex: 40,
-              background: 'rgba(0,0,0,0.6)',
+              background: 'rgba(0,0,0,0.5)',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',
             }}
@@ -56,13 +56,13 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                 maxHeight: '90vh',
                 display: 'flex',
                 flexDirection: 'column',
-                /* glass modal */
-                background: 'rgba(12,8,32,0.92)',
+                /* theme-aware modal surface */
+                background: 'var(--card-strong)',
                 backdropFilter: 'blur(28px)',
                 WebkitBackdropFilter: 'blur(28px)',
-                border: '1px solid rgba(255,255,255,0.12)',
+                border: '1px solid var(--glass-border)',
                 borderRadius: 20,
-                boxShadow: '0 32px 80px -16px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05) inset',
+                boxShadow: 'var(--shadow-lg)',
                 overflow: 'hidden',
               }}
             >
@@ -70,7 +70,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
               <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 padding: '18px 24px',
-                borderBottom: '1px solid rgba(255,255,255,0.08)',
+                borderBottom: '1px solid var(--glass-border)',
                 flexShrink: 0,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -82,11 +82,11 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                 <button
                   onClick={onClose}
                   aria-label="Close"
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--glass-bg-hover)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--glass-bg)')}
                   style={{
                     width: 32, height: 32, borderRadius: 8, border: 'none', cursor: 'pointer',
-                    background: 'rgba(255,255,255,0.05)',
+                    background: 'var(--glass-bg)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'background 0.15s ease', flexShrink: 0,
                   }}

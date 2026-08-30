@@ -29,10 +29,10 @@ function CustomTooltip({ active, payload, total }: any) {
     return (
         <div style={{
             padding: '10px 14px', borderRadius: 12, minWidth: 140,
-            background: 'rgba(15,10,40,0.92)',
+            background: 'var(--tooltip-bg)',
             backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.12)',
-            boxShadow: '0 12px 32px -8px rgba(0,0,0,0.6)',
+            border: '1px solid var(--glass-border)',
+            boxShadow: 'var(--shadow-lg)',
         }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: color, flexShrink: 0 }} />
@@ -107,7 +107,7 @@ export function GradePieChart({ data, title }: GradePieChartProps) {
                         labelLine={false}
                         label={renderLabel}
                         strokeWidth={2}
-                        stroke="rgba(8,13,26,0.6)"
+                        stroke="var(--bg)"
                     >
                         {data.map((entry, i) => (
                             <Cell key={i} fill={GRADE_COLORS[entry.name] ?? 'var(--text-muted)'} />

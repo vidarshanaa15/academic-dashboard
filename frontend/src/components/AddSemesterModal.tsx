@@ -143,10 +143,10 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
                   ? 'linear-gradient(135deg, var(--accent), #5b21b6)'
                   : done
                     ? 'var(--success-muted)'
-                    : 'rgba(255,255,255,0.07)',
+                    : 'var(--glass-bg)',
                 color: active ? '#fff' : done ? 'var(--success)' : 'var(--text-muted)',
-                border: active ? 'none' : done ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.1)',
-                boxShadow: active ? '0 0 16px -4px rgba(124,58,237,0.6)' : 'none',
+                border: active ? 'none' : done ? '1px solid rgba(16,185,129,0.3)' : '1px solid var(--glass-border)',
+                boxShadow: active ? '0 0 16px -4px var(--accent-glow)' : 'none',
                 transition: 'all 0.3s ease',
               }}>
                 {done ? '✓' : s}
@@ -156,7 +156,7 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
                   height: 2, width: 40, borderRadius: 99,
                   background: step > s
                     ? 'linear-gradient(90deg, var(--accent), var(--accent-2))'
-                    : 'rgba(255,255,255,0.08)',
+                    : 'var(--glass-border)',
                   transition: 'background 0.3s ease',
                 }} />
               )}
@@ -225,16 +225,16 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
                       style={{
                         padding: '1rem', borderRadius: 14, textAlign: 'left',
                         cursor: 'pointer', fontFamily: 'inherit',
-                        background: active ? opt.accentBg : 'rgba(255,255,255,0.04)',
-                        border: `1.5px solid ${active ? opt.accentBorder : 'rgba(255,255,255,0.1)'}`,
+                        background: active ? opt.accentBg : 'var(--glass-bg)',
+                        border: `1.5px solid ${active ? opt.accentBorder : 'var(--glass-border)'}`,
                         transition: 'all 0.2s ease',
                       }}
                     >
                       <div style={{
                         width: 32, height: 32, borderRadius: 8, marginBottom: 10,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: active ? opt.accentBg : 'rgba(255,255,255,0.06)',
-                        border: `1px solid ${active ? opt.accentBorder : 'rgba(255,255,255,0.08)'}`,
+                        background: active ? opt.accentBg : 'var(--glass-bg-hover)',
+                        border: `1px solid ${active ? opt.accentBorder : 'var(--glass-border)'}`,
                       }}>
                         <Icon size={16} style={{ color: active ? opt.accentColor : 'var(--text-muted)' }} />
                       </div>
@@ -259,7 +259,7 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 background: 'linear-gradient(135deg, var(--accent), #5b21b6)',
                 color: '#fff', fontWeight: 600, fontSize: '0.9rem', fontFamily: 'inherit',
-                boxShadow: '0 6px 20px -4px rgba(124,58,237,0.5)',
+                boxShadow: '0 6px 20px -4px var(--accent-glow)',
               }}
             >
               Next: Add Subjects <ChevronRight size={16} />
@@ -279,7 +279,7 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '10px 14px', borderRadius: 10,
-              background: 'rgba(255,255,255,0.04)', border: '1px solid var(--glass-border)',
+              background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
               flexWrap: 'wrap', gap: 8,
             }}>
               <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
@@ -397,7 +397,7 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   padding: '11px 18px', borderRadius: 12, cursor: 'pointer', fontFamily: 'inherit',
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)',
+                  background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
                   color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.875rem',
                   transition: 'all 0.2s ease',
                 }}
@@ -413,11 +413,11 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
                   background: saving
-                    ? 'rgba(255,255,255,0.06)'
+                    ? 'var(--glass-bg)'
                     : 'linear-gradient(135deg, var(--accent), #5b21b6)',
                   color: '#fff', fontWeight: 600, fontSize: '0.9rem',
                   opacity: saving ? 0.65 : 1,
-                  boxShadow: saving ? 'none' : '0 6px 20px -4px rgba(124,58,237,0.5)',
+                  boxShadow: saving ? 'none' : '0 6px 20px -4px var(--accent-glow)',
                   transition: 'all 0.2s ease',
                 }}
               >

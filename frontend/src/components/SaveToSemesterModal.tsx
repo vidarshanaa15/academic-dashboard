@@ -138,7 +138,7 @@ export function SaveToSemesterModal({ isOpen, onClose, subjects, onSaved }: Save
                 <div style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '10px 14px', borderRadius: 10,
-                    background: 'rgba(255,255,255,0.04)', border: '1px solid var(--glass-border)',
+                    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
                     flexWrap: 'wrap', gap: 8,
                 }}>
                     <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
@@ -194,7 +194,7 @@ export function SaveToSemesterModal({ isOpen, onClose, subjects, onSaved }: Save
                         onClick={handleClose}
                         style={{
                             flex: 1, padding: '11px', borderRadius: 12, cursor: 'pointer', fontFamily: 'inherit',
-                            background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)',
+                            background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
                             color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.875rem',
                             transition: 'all 0.2s ease',
                         }}
@@ -209,11 +209,11 @@ export function SaveToSemesterModal({ isOpen, onClose, subjects, onSaved }: Save
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                             cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
                             background: saving
-                                ? 'rgba(255,255,255,0.06)'
+                                ? 'var(--glass-bg)'
                                 : 'linear-gradient(135deg, var(--accent), #5b21b6)',
                             color: '#fff', fontWeight: 600, fontSize: '0.9rem',
                             opacity: saving ? 0.65 : 1,
-                            boxShadow: saving ? 'none' : '0 6px 20px -4px rgba(124,58,237,0.5)',
+                            boxShadow: saving ? 'none' : '0 6px 20px -4px var(--accent-glow)',
                             transition: 'all 0.2s ease',
                         }}
                     >

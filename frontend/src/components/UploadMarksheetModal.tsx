@@ -170,7 +170,7 @@ export function UploadMarksheetModal({ isOpen, onClose, onAdd }: UploadMarksheet
                             style={{
                                 border: `1.5px dashed ${file ? 'rgba(124,58,237,0.5)' : 'var(--glass-border)'}`,
                                 borderRadius: 14, padding: '2rem 1.5rem', textAlign: 'center',
-                                cursor: 'pointer', background: file ? 'rgba(124,58,237,0.06)' : 'rgba(255,255,255,0.02)',
+                                cursor: 'pointer', background: file ? 'rgba(124,58,237,0.06)' : 'var(--glass-bg)',
                                 transition: 'all 0.2s ease',
                             }}
                         >
@@ -211,9 +211,9 @@ export function UploadMarksheetModal({ isOpen, onClose, onAdd }: UploadMarksheet
                             style={{
                                 width: '100%', padding: '12px', borderRadius: 12, border: 'none',
                                 cursor: file ? 'pointer' : 'not-allowed',
-                                background: file ? 'linear-gradient(135deg, var(--accent), #5b21b6)' : 'rgba(255,255,255,0.06)',
+                                background: file ? 'linear-gradient(135deg, var(--accent), #5b21b6)' : 'var(--glass-bg)',
                                 color: file ? '#fff' : 'var(--text-muted)', fontWeight: 600, fontSize: '0.9rem', fontFamily: 'inherit',
-                                boxShadow: file ? '0 6px 20px -4px rgba(124,58,237,0.5)' : 'none',
+                                boxShadow: file ? '0 6px 20px -4px var(--accent-glow)' : 'none',
                             }}
                         >
                             Extract Subjects
@@ -315,7 +315,7 @@ export function UploadMarksheetModal({ isOpen, onClose, onAdd }: UploadMarksheet
                         <div style={{ display: 'flex', gap: 10 }}>
                             <button
                                 onClick={() => { setStage('upload'); setFile(null); }}
-                                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '11px 18px', borderRadius: 12, cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.875rem' }}
+                                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '11px 18px', borderRadius: 12, cursor: 'pointer', fontFamily: 'inherit', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.875rem' }}
                             >
                                 <ChevronLeft size={15} /> Back
                             </button>
@@ -326,9 +326,9 @@ export function UploadMarksheetModal({ isOpen, onClose, onAdd }: UploadMarksheet
                                     flex: 1, padding: '11px', borderRadius: 12, border: 'none',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                                     cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
-                                    background: saving ? 'rgba(255,255,255,0.06)' : 'linear-gradient(135deg, var(--accent), #5b21b6)',
+                                    background: saving ? 'var(--glass-bg)' : 'linear-gradient(135deg, var(--accent), #5b21b6)',
                                     color: '#fff', fontWeight: 600, fontSize: '0.9rem', opacity: saving ? 0.65 : 1,
-                                    boxShadow: saving ? 'none' : '0 6px 20px -4px rgba(124,58,237,0.5)',
+                                    boxShadow: saving ? 'none' : '0 6px 20px -4px var(--accent-glow)',
                                 }}
                             >
                                 {saving ? <><Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> Saving…</> : 'Save Semester'}
