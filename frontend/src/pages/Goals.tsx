@@ -5,21 +5,18 @@ import { Modal } from '../components/Modal';
 import { fetchAcademicData, toggleGoalStatus, deleteGoalFromDb, addGoalToDb } from '../lib/dataService';
 import { type Goal, type Semester } from '../data/sampleData';
 
-/* ── animation helpers ──────────────────────────────────────── */
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 18 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.4, delay, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] },
 });
 
-/* ── priority config ────────────────────────────────────────── */
 const PRIORITY_META = {
   High: { icon: Flame, color: 'var(--danger)', bg: 'var(--danger-muted)', border: 'rgba(239,68,68,0.25)' },
   Medium: { icon: ChevronUp, color: 'var(--warning)', bg: 'var(--warning-muted)', border: 'rgba(245,158,11,0.25)' },
   Low: { icon: Minus, color: 'var(--success)', bg: 'var(--success-muted)', border: 'rgba(16,185,129,0.25)' },
 } as const;
 
-/* ── small reusables ────────────────────────────────────────── */
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1.25rem' }}>
@@ -41,7 +38,6 @@ function FormLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ── main component ─────────────────────────────────────────── */
 export function Goals() {
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -68,9 +64,7 @@ export function Goals() {
     loadData();
   }, []);
 
-  // semesters kept for potential future goal-progress features tied to academic data
   void semesters;
-
   const completedCount = goals.filter(g => g.completed).length;
   const totalCount = goals.length;
   const completionPct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
@@ -128,8 +122,6 @@ export function Goals() {
 
   return (
     <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.75rem', maxWidth: 1100, margin: '0 auto' }}>
-
-      {/* ── Page header ─────────────────────────────────────── */}
       <motion.div {...fadeUp(0)}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <div>
@@ -162,7 +154,6 @@ export function Goals() {
         </div>
       </motion.div>
 
-      {/* ── Goals progress strip ─────────────────────────────── */}
       {totalCount > 0 && (
         <motion.div {...fadeUp(0.07)}>
           <div className="glass-card" style={{ padding: '1.1rem 1.4rem' }}>
@@ -188,7 +179,6 @@ export function Goals() {
         </motion.div>
       )}
 
-      {/* ── Goals list ───────────────────────────────────────── */}
       <motion.div {...fadeUp(0.14)}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: 8 }}>
           <SectionHeading>Your Goals</SectionHeading>
@@ -300,7 +290,6 @@ export function Goals() {
         )}
       </motion.div>
 
-      {/* ── Add Goal Modal ───────────────────────────────────── */}
       <Modal isOpen={showGoalModal} onClose={() => setShowGoalModal(false)} title="Add New Goal" size="md">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
 

@@ -12,7 +12,6 @@ interface ModalProps {
 
 const MAX_WIDTHS = { sm: 420, md: 580, lg: 760, xl: 960 };
 
-// Modal = reusable popup/dialog container
 export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -30,7 +29,6 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* backdrop */}
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
@@ -42,7 +40,6 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
             }}
           />
 
-          {/* modal container */}
           <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 16 }}
@@ -56,7 +53,6 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                 maxHeight: '90vh',
                 display: 'flex',
                 flexDirection: 'column',
-                /* theme-aware modal surface */
                 background: 'var(--card-strong)',
                 backdropFilter: 'blur(28px)',
                 WebkitBackdropFilter: 'blur(28px)',
@@ -66,7 +62,6 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                 overflow: 'hidden',
               }}
             >
-              {/* header */}
               <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 padding: '18px 24px',
@@ -94,8 +89,6 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                   <X size={15} style={{ color: 'var(--text-muted)' }} />
                 </button>
               </div>
-
-              {/* scrollable body */}
               <div
                 className="custom-scrollbar"
                 style={{ padding: '24px', overflowY: 'auto', flex: 1 }}

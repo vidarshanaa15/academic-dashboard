@@ -12,7 +12,6 @@ import { SemesterPDFPreview } from '../components/SemesterPDFPreview';
 import { exportSemesterPDF } from '../lib/exportSemesterPDF';
 import { UploadMarksheetModal } from '../components/UploadMarksheetModal';
 
-/* ── grade color maps (charts + badges only) ─────────────────── */
 const GRADE_COLORS: Record<string, string> = {
   O: 'var(--chart-o)', 'A+': 'var(--chart-ap)', A: 'var(--chart-a)',
   'B+': 'var(--chart-bp)', B: 'var(--chart-b)', C: 'var(--chart-c)',
@@ -127,7 +126,6 @@ export function Semesters() {
     s.subjects.some(sub => sub.name.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  /* ── Loading ─────────────────────────────────────────────── */
   if (loading) return (
     <div style={{ height: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
       <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -137,7 +135,6 @@ export function Semesters() {
     </div>
   );
 
-  /* ── Empty ───────────────────────────────────────────────── */
   if (semesters.length === 0) return (
     <div style={{ padding: '1.75rem' }}>
       <EmptyState title="No Semesters Yet" description="Start tracking your academic journey by adding your first semester" action={{ label: 'Add First Semester', onClick: () => setShowAddModal(true) }} />
@@ -148,7 +145,6 @@ export function Semesters() {
   return (
     <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.75rem', maxWidth: 1280, margin: '0 auto' }}>
 
-      {/* ── Header ───────────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
           <div>
@@ -171,7 +167,6 @@ export function Semesters() {
         </div>
       </motion.div>
 
-      {/* ── Cards grid ───────────────────────────────────────── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.1rem' }}>
         <AnimatePresence>
           {filtered.map((semester, index) => {
@@ -230,7 +225,7 @@ export function Semesters() {
                     <p style={{ fontSize: '0.6rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: 4 }}>CGPA</p>
                     {semester.cgpa != null
                       ? <p style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--accent-2)', margin: 0, letterSpacing: '-0.03em', lineHeight: 1 }}>{semester.cgpa.toFixed(2)}</p>
-                      : <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: 0 }}>—</p>
+                      : <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: 0 }}>-</p>
                     }
                   </div>
                 </div>
@@ -253,7 +248,6 @@ export function Semesters() {
         </AnimatePresence>
       </div>
 
-      {/* ── Detail Modal ─────────────────────────────────────── */}
       <Modal isOpen={showDetailModal} onClose={() => setShowDetailModal(false)} title={selectedSemester?.name || ''} size="xl">
         {selectedSemester && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -261,7 +255,7 @@ export function Semesters() {
             {selectedSemester.status === 'planned' && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)' }}>
                 <Clock size={14} style={{ color: 'var(--warning)', flexShrink: 0 }} />
-                <p style={{ fontSize: '0.8125rem', color: 'var(--warning)', margin: 0, flex: 1 }}>Semester in progress — GPA will be calculated once all grades are entered.</p>
+                <p style={{ fontSize: '0.8125rem', color: 'var(--warning)', margin: 0, flex: 1 }}>Semester in progress, GPA will be calculated once all grades are entered.</p>
                 <button onClick={() => { setShowDetailModal(false); setEditingSemester(selectedSemester); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.75rem', color: 'var(--warning)', textDecoration: 'underline', whiteSpace: 'nowrap' }}>Enter grades</button>
               </div>
             )}
@@ -306,7 +300,7 @@ export function Semesters() {
                             : <span style={{ display: 'inline-flex', padding: '3px 10px', borderRadius: 999, fontSize: '0.75rem', fontWeight: 600, background: 'rgba(255,255,255,0.06)', color: 'var(--text-muted)' }}>Pending</span>
                           }
                         </td>
-                        <td style={{ padding: '11px 14px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>{sub.grade ? gradeMapping[sub.grade] : '—'}</td>
+                        <td style={{ padding: '11px 14px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>{sub.grade ? gradeMapping[sub.grade] : '-'}</td>
                         <td style={{ padding: '11px 14px' }}>
                           <span style={{ display: 'inline-flex', padding: '3px 10px', borderRadius: 999, fontSize: '0.6875rem', fontWeight: 600, background: 'rgba(124,58,237,0.12)', color: 'var(--accent)', border: '1px solid rgba(124,58,237,0.2)' }}>{sub.tag}</span>
                         </td>
@@ -368,7 +362,6 @@ export function Semesters() {
         <EditSemesterModal semester={editingSemester} isOpen={!!editingSemester} onClose={() => setEditingSemester(null)} onUpdated={handleSemesterUpdated} />
       )}
 
-      {/* ── Delete confirmation ───────────────────────────────── */}
       <AnimatePresence>
         {confirmDeleteSemester && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
@@ -396,7 +389,7 @@ export function Semesters() {
         )}
       </AnimatePresence>
 
-      {/* ── PDF export overlay ────────────────────────────────── */}
+      {/* PDF export overlay */}
       <AnimatePresence>
         {exportingPDF && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

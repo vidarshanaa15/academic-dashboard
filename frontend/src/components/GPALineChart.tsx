@@ -55,7 +55,6 @@ export function GPALineChart({ data }: GPALineChartProps) {
 
   return (
     <div>
-      {/* interactive legend */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
         {SERIES.map(s => {
           const off = hidden.has(s.key);

@@ -1,9 +1,5 @@
-/* ============================================================
-   ACADEMIC DASHBOARD — index.css
-   Glassmorphism Design System
-   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-/* ── Tailwind v4 property layer (untouched) ────────────────── */
 @layer properties {
   @supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
 
@@ -1076,9 +1072,6 @@
   }
 }
 
-/* ============================================================
-   DESIGN TOKENS — Dark mode (default)
-   ============================================================ */
 :root {
   /* core surfaces */
   --bg: #080d1a;
@@ -1114,7 +1107,7 @@
   --glass-blur: blur(20px);
   --glass-blur-sm: blur(12px);
 
-  /* grade colors — muted for dark mode */
+  /* grade colors for dark mode */
   --grade-o: #a78bfa;
   --grade-o-bg: rgba(167, 139, 250, 0.15);
   --grade-ap: #67e8f9;
@@ -1128,7 +1121,7 @@
   --grade-c: #fca5a5;
   --grade-c-bg: rgba(252, 165, 165, 0.13);
 
-  /* chart colors — same palette, slightly brighter */
+  /* chart colors for light mode */
   --chart-o: #8b5cf6;
   --chart-ap: #06b6d4;
   --chart-a: #10b981;
@@ -1168,9 +1161,6 @@
   --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ============================================================
-   DESIGN TOKENS — Light mode
-   ============================================================ */
 [data-theme="light"] {
   /* ── Background: soft lavender-white ─────────────────────────── */
   --bg: #eef2ff;
@@ -1240,7 +1230,6 @@
 /* ============================================================
    GOOGLE FONTS
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 /* ============================================================
    GLOBAL RESET & BASE
@@ -1365,11 +1354,6 @@ pre {
   }
 }
 
-/* ============================================================
-   GLASS CARD SYSTEM
-   The core reusable primitives — use these on your card divs
-   ============================================================ */
-
 /* Base glass card */
 .glass-card {
   background: var(--glass-bg);
@@ -1388,7 +1372,7 @@ pre {
   border-color: var(--glass-border-hover);
 }
 
-/* Stronger glass — for highlighted/featured cards */
+/* Stronger glass for highlighted/featured cards */
 .glass-card-strong {
   background: var(--card-strong);
   backdrop-filter: var(--glass-blur);
@@ -1397,7 +1381,7 @@ pre {
   border-radius: var(--radius-xl);
 }
 
-/* Subtle glass — for inner sections inside a card */
+/* Subtle glass for inner sections inside a card */
 .glass-inner {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--glass-border);
@@ -1453,7 +1437,7 @@ pre {
   border-color: rgba(200, 195, 255, 0.4);
 }
 
-/* White sidebar and navbar — fits the light mode aesthetic */
+/* White sidebar and navbar fits the light mode aesthetic */
 [data-theme="light"] .glass-sidebar {
   background: #ffffff;
   border-right: 1px solid rgba(200, 195, 255, 0.4);
@@ -1502,10 +1486,6 @@ pre {
   background: rgba(124, 58, 237, 0.35);
 }
 
-/* ============================================================
-   GRADE BADGE SYSTEM
-   Contained — only use inside charts, subject rows, sem cards
-   ============================================================ */
 .grade-badge {
   display: inline-flex;
   align-items: center;
@@ -1550,7 +1530,7 @@ pre {
   color: var(--grade-c);
 }
 
-/* Grade dot — tiny colored circle for legends */
+/* tiny colored circle for legends */
 .grade-dot {
   display: inline-block;
   width: 8px;
@@ -1583,9 +1563,6 @@ pre {
   background: var(--chart-c);
 }
 
-/* ============================================================
-   STAT CARDS — for CGPA, credits, semester hero numbers
-   ============================================================ */
 .stat-value {
   font-size: 2.75rem;
   font-weight: 800;
@@ -1696,7 +1673,7 @@ pre {
   transform: scale(0.97);
 }
 
-/* Primary — accent gradient */
+/* primary accent gradient */
 .btn-primary {
   background: linear-gradient(135deg, var(--accent), #5b21b6);
   color: #fff;
@@ -1708,7 +1685,7 @@ pre {
   filter: brightness(1.1);
 }
 
-/* Secondary — glass */
+/* Secondary glass */
 .btn-secondary {
   background: var(--glass-bg);
   color: var(--text-primary);
@@ -1840,9 +1817,6 @@ input[type="radio"] {
   margin: 0;
 }
 
-/* ============================================================
-   ACCENT LINE — top border highlight on cards
-   ============================================================ */
 .accent-top {
   position: relative;
   overflow: hidden;

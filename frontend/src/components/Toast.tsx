@@ -60,27 +60,22 @@ export function Toast({ message, type = 'info', duration = 3000, onClose, isVisi
             minWidth: 320, maxWidth: 480,
             display: 'flex', alignItems: 'center', gap: 12,
             padding: '12px 16px', borderRadius: 14,
-            /* glass toast */
             background: 'rgba(12,8,32,0.88)',
             backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
             border: `1px solid ${meta.border}`,
             boxShadow: `0 16px 40px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 0 24px -8px ${meta.glow}`,
           }}
         >
-          {/* colored left bar */}
           <div style={{ position: 'absolute', left: 0, top: '15%', bottom: '15%', width: 3, borderRadius: '0 3px 3px 0', background: meta.color }} />
 
-          {/* icon */}
           <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0, background: meta.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Icon size={16} style={{ color: meta.color }} />
           </div>
 
-          {/* message */}
           <p style={{ flex: 1, fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)', margin: 0, lineHeight: 1.5 }}>
             {message}
           </p>
 
-          {/* close */}
           <button
             onClick={onClose}
             onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
@@ -96,7 +91,6 @@ export function Toast({ message, type = 'info', duration = 3000, onClose, isVisi
   );
 }
 
-/* ── useToast hook (unchanged API) ──────────────────────────── */
 export function useToast() {
   const [toast, setToast] = useState<{ message: string; type: ToastType; isVisible: boolean }>({
     message: '', type: 'info', isVisible: false,

@@ -10,7 +10,6 @@ interface TopbarProps {
 export function Topbar({ theme, onThemeToggle, onMobileMenuToggle }: TopbarProps) {
   const isDark = theme === 'dark';
 
-  /* ── theme-aware tokens ──────────────────────────────────────── */
   const bg = isDark ? 'rgba(8, 13, 26, 0.72)' : 'rgba(255,255,255,0.92)';
   const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(200,195,255,0.4)';
   const btnBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(124,58,237,0.07)';
@@ -41,10 +40,9 @@ export function Topbar({ theme, onThemeToggle, onMobileMenuToggle }: TopbarProps
     >
       <div style={{ flex: 1 }} />
 
-      {/* ── Right actions ─────────────────────────────────────── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
 
-        {/* Theme toggle */}
+        {/* theme toggle */}
         <motion.button
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.94 }}
@@ -72,10 +70,8 @@ export function Topbar({ theme, onThemeToggle, onMobileMenuToggle }: TopbarProps
           </motion.div>
         </motion.button>
 
-        {/* Divider */}
         <div style={{ width: 1, height: 22, background: dividerColor }} />
 
-        {/* Avatar */}
         <motion.div
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.94 }}

@@ -103,7 +103,6 @@ export function SaveToSemesterModal({ isOpen, onClose, subjects, onSaved }: Save
         <Modal isOpen={isOpen} onClose={handleClose} title="Save to Semester" size="lg">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
 
-                {/* Name */}
                 <div>
                     <FormLabel required>Semester Name</FormLabel>
                     <input
@@ -114,7 +113,6 @@ export function SaveToSemesterModal({ isOpen, onClose, subjects, onSaved }: Save
                     <FieldError msg={errors.name} />
                 </div>
 
-                {/* Year + Term */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                     <div>
                         <FormLabel required>Year</FormLabel>
@@ -134,7 +132,6 @@ export function SaveToSemesterModal({ isOpen, onClose, subjects, onSaved }: Save
                     </div>
                 </div>
 
-                {/* Summary banner */}
                 <div style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '10px 14px', borderRadius: 10,
@@ -149,7 +146,6 @@ export function SaveToSemesterModal({ isOpen, onClose, subjects, onSaved }: Save
                     <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--accent)' }}>Grades carried over as-is</span>
                 </div>
 
-                {/* Subjects — grades/credits read-only, only tag is editable */}
                 <div>
                     <FormLabel>Assign a course type to each subject</FormLabel>
                     <div

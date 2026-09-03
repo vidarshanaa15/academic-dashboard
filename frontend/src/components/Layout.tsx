@@ -10,7 +10,7 @@ export function Layout() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [isMobile, setIsMobile] = useState(false);
 
-  // Load theme from localStorage on mount
+  // load theme from localStorage 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
     if (savedTheme) {
@@ -18,7 +18,6 @@ export function Layout() {
       document.documentElement.setAttribute('data-theme', savedTheme);
     }
 
-    // Check if mobile
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
       if (window.innerWidth < 768) {
@@ -40,7 +39,6 @@ export function Layout() {
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ backgroundColor: 'var(--bg)' }}>
-      {/* Sidebar - Hide on mobile when collapsed */}
       <div className={`${isMobile && sidebarCollapsed ? 'hidden' : ''}`}>
         <Sidebar
           isCollapsed={sidebarCollapsed}
@@ -48,18 +46,13 @@ export function Layout() {
         />
       </div>
 
-      {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Topbar */}
         <Topbar theme={theme} onThemeToggle={toggleTheme} />
-
-        {/* Page Content */}
         <main className="flex-1 overflow-y-auto custom-scrollbar">
           <Outlet />
         </main>
       </div>
       <Chatbot />
-      {/* Onboarding Tour */}
       <OnboardingTour />
     </div>
   );

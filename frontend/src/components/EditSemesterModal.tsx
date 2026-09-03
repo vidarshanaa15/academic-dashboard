@@ -111,7 +111,7 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
     }
   };
 
-  /* ── subject delete confirmation portal ─────────────────── */
+  /* delete confirmation */
   const confirmationPortal = createPortal(
     <AnimatePresence>
       {confirmDeleteSubjectId && confirmSubjectToDelete && (
@@ -148,10 +148,10 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} title={`Edit — ${semester.name}`} size="lg">
+      <Modal isOpen={isOpen} onClose={onClose} title={`Edit - ${semester.name}`} size="lg">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
-          {/* Status badge */}
+          {/* status badge */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', flexWrap: 'wrap' }}>
             <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>Status</span>
             <span style={{
@@ -170,7 +170,7 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
             )}
           </div>
 
-          {/* Subject table */}
+          {/* subject table */}
           <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid var(--glass-border)' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
@@ -181,7 +181,7 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
                 </tr>
               </thead>
               <tbody>
-                {/* Existing subjects */}
+                {/* existing subjects */}
                 <AnimatePresence>
                   {visibleSubjects.map((subject, i) => {
                     const currentGrade = gradeDraft[subject.id];
@@ -216,7 +216,7 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
                               borderColor: currentGrade === '' ? 'rgba(245,158,11,0.5)' : changed ? 'rgba(124,58,237,0.5)' : undefined,
                             }}
                           >
-                            <option value="">— Pending —</option>
+                            <option value="">- Pending -</option>
                             {GRADES.map(g => <option key={g} value={g}>{g} ({gradeMapping[g]})</option>)}
                           </select>
                         </td>
@@ -236,7 +236,6 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
                   })}
                 </AnimatePresence>
 
-                {/* New subject rows */}
                 <AnimatePresence>
                   {newRows.map(row => (
                     <motion.tr
@@ -262,7 +261,7 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
                       </td>
                       <td style={{ padding: '8px 10px' }}>
                         <select value={row.grade} onChange={e => updateNewRow(row.tempId, 'grade', e.target.value)} style={{ fontSize: '0.8125rem', minWidth: '7.5rem', borderColor: 'rgba(124,58,237,0.4)' }}>
-                          <option value="">— Pending —</option>
+                          <option value="">- Pending -</option>
                           {GRADES.map(g => <option key={g} value={g}>{g} ({gradeMapping[g]})</option>)}
                         </select>
                       </td>
@@ -289,7 +288,6 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
             </table>
           </div>
 
-          {/* Add subject */}
           <button
             onClick={addNewRow}
             onMouseEnter={e => (e.currentTarget.style.background = 'rgba(124,58,237,0.1)')}
@@ -299,18 +297,16 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
             <Plus size={14} /> Add Subject
           </button>
 
-          {/* Auto-complete hint */}
           {allGradesFilled && (visibleSubjects.length > 0 || newRows.length > 0) && semester.status === 'planned' && (
             <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
               style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, background: 'var(--success-muted)', border: '1px solid rgba(16,185,129,0.3)' }}>
               <CheckCircle2 size={15} style={{ color: 'var(--success)', flexShrink: 0 }} />
               <span style={{ fontSize: '0.8125rem', color: 'var(--success)' }}>
-                All grades filled — semester will be marked Completed on save.
+                All grades filled, semester will be marked Completed on save.
               </span>
             </motion.div>
           )}
 
-          {/* Pending deletions notice */}
           {deletedIds.size > 0 && (
             <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
               style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, background: 'var(--danger-muted)', border: '1px solid rgba(239,68,68,0.3)' }}>
@@ -323,7 +319,6 @@ export function EditSemesterModal({ semester, isOpen, onClose, onUpdated }: Edit
 
           {error && <p style={{ fontSize: '0.8125rem', color: 'var(--danger)', textAlign: 'center' }}>{error}</p>}
 
-          {/* Save button */}
           <motion.button
             whileHover={{ scale: saving || saved || !hasChanges ? 1 : 1.02 }}
             whileTap={{ scale: saving || saved || !hasChanges ? 1 : 0.98 }}

@@ -62,7 +62,6 @@ export function OnboardingTour() {
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* backdrop */}
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={handleClose}
@@ -80,7 +79,6 @@ export function OnboardingTour() {
               position: 'fixed', top: '50%', left: '50%',
               transform: 'translate(-50%, -50%)',
               zIndex: 50, width: '100%', maxWidth: 420,
-              /* theme-aware card */
               background: 'var(--card-strong)',
               backdropFilter: 'blur(28px)', WebkitBackdropFilter: 'blur(28px)',
               border: '1px solid rgba(124,58,237,0.35)',
@@ -89,14 +87,11 @@ export function OnboardingTour() {
               overflow: 'hidden',
             }}
           >
-            {/* accent top line */}
             <div style={{ height: 2, background: 'linear-gradient(90deg, var(--accent), var(--accent-2))' }} />
 
             <div style={{ padding: '1.5rem' }}>
-              {/* header */}
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flex: 1 }}>
-                  {/* emoji badge */}
                   <div style={{
                     width: 48, height: 48, borderRadius: 14, flexShrink: 0,
                     background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.3)',
@@ -130,7 +125,6 @@ export function OnboardingTour() {
                 {step.description}
               </p>
 
-              {/* progress bar segments */}
               <div style={{ display: 'flex', gap: 5, marginBottom: '1.25rem' }}>
                 {tourSteps.map((_, i) => (
                   <motion.div

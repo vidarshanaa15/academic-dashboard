@@ -34,8 +34,6 @@ export function UploadMarksheetModal({ isOpen, onClose, onAdd }: UploadMarksheet
     const [saveError, setSaveError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    // Review-stage editable fields
     const [semesterName, setSemesterName] = useState('');
     const [year, setYear] = useState(new Date().getFullYear().toString());
     const [term, setTerm] = useState<'Odd' | 'Even'>('Odd');
@@ -148,8 +146,6 @@ export function UploadMarksheetModal({ isOpen, onClose, onAdd }: UploadMarksheet
     return (
         <Modal isOpen={isOpen} onClose={handleClose} title="Upload Marksheet" size="lg">
             <AnimatePresence mode="wait">
-
-                {/* ── UPLOAD STAGE ─────────────────────────────── */}
                 {stage === 'upload' && (
                     <motion.div
                         key="upload"
@@ -221,7 +217,6 @@ export function UploadMarksheetModal({ isOpen, onClose, onAdd }: UploadMarksheet
                     </motion.div>
                 )}
 
-                {/* ── EXTRACTING STAGE ─────────────────────────── */}
                 {stage === 'extracting' && (
                     <motion.div
                         key="extracting"
@@ -235,7 +230,6 @@ export function UploadMarksheetModal({ isOpen, onClose, onAdd }: UploadMarksheet
                     </motion.div>
                 )}
 
-                {/* ── REVIEW STAGE ─────────────────────────────── */}
                 {stage === 'review' && (
                     <motion.div
                         key="review"
@@ -245,11 +239,10 @@ export function UploadMarksheetModal({ isOpen, onClose, onAdd }: UploadMarksheet
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 10, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)' }}>
                             <CheckCircle2 size={14} style={{ color: 'var(--success)', flexShrink: 0 }} />
                             <p style={{ fontSize: '0.8125rem', color: 'var(--success)', margin: 0 }}>
-                                Extracted {subjects.length} subject{subjects.length !== 1 ? 's' : ''} — review before saving. Predicted tags may need adjusting.
+                                Extracted {subjects.length} subject{subjects.length !== 1 ? 's' : ''}. Review before saving. Predicted tags may need adjusting.
                             </p>
                         </div>
 
-                        {/* Semester meta */}
                         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 10 }}>
                             <div>
                                 <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Semester Name</label>
@@ -267,7 +260,6 @@ export function UploadMarksheetModal({ isOpen, onClose, onAdd }: UploadMarksheet
                             </div>
                         </div>
 
-                        {/* Subject rows */}
                         <div className="custom-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 320, overflowY: 'auto', paddingRight: 2 }}>
                             {subjects.map((subject, idx) => (
                                 <div key={idx} className="glass-inner" style={{ padding: '0.9rem 1rem' }}>

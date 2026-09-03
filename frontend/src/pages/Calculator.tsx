@@ -48,7 +48,6 @@ function FormLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Small hover-triggered info bubble. No separate box needed — sits inline next to a heading. */
 function InfoTooltip({ text }: { text: string }) {
   return (
     <span
@@ -84,8 +83,6 @@ export function Calculator() {
   const [personalTarget, setPersonalTarget] = useState(8.5);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [savedBanner, setSavedBanner] = useState<string | null>(null);
-
-  /* ── data for Target CGPA Calculator (moved from Goals page) ── */
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [targetGPA, setTargetGPA] = useState<string>('9.0');
   const [remainingCredits, setRemainingCredits] = useState<string>('40');
@@ -128,7 +125,6 @@ export function Calculator() {
   const resultBg = isAchievable ? (difficulty === 'high' ? 'rgba(245,158,11,0.07)' : 'rgba(16,185,129,0.07)') : 'rgba(239,68,68,0.07)';
   const resultIconBg = isAchievable ? (difficulty === 'high' ? 'rgba(245,158,11,0.18)' : 'rgba(16,185,129,0.18)') : 'rgba(239,68,68,0.18)';
 
-  /* ── existing calculator logic — fully real-time ── */
   const liveGPA = () => {
     if (!subjects.length) return 0;
     const pts = subjects.reduce((s, sub) => s + sub.credits * sub.gradePoint, 0);
@@ -142,7 +138,6 @@ export function Calculator() {
   const gap = personalTarget - liveGPA();
   const hitTarget = subjects.length > 0 && liveGPA() >= personalTarget;
 
-  /* fire confetti once, at the moment the live GPA crosses the target */
   const prevHitRef = useRef(hitTarget);
   const isFirstRender = useRef(true);
   useEffect(() => {
@@ -187,7 +182,6 @@ export function Calculator() {
   return (
     <div className="calculator-page" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.75rem', maxWidth: 1280, margin: '0 auto' }}>
 
-      {/* global fixes: hide number-input spinners, style the info tooltip hover */}
       <style>{`
         .calculator-page input[type="number"]::-webkit-outer-spin-button,
         .calculator-page input[type="number"]::-webkit-inner-spin-button {
@@ -203,7 +197,6 @@ export function Calculator() {
         }
       `}</style>
 
-      {/* ── Header ───────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <p style={{ fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>
           Tools
@@ -219,7 +212,6 @@ export function Calculator() {
         </p>
       </motion.div>
 
-      {/* ── Saved confirmation banner ─────────────────────── */}
       <AnimatePresence>
         {savedBanner && (
           <motion.div
@@ -240,7 +232,7 @@ export function Calculator() {
         )}
       </AnimatePresence>
 
-      {/* ── Target CGPA Calculator (compact — inputs left, verdict right) ── */}
+      {/* target CGPA Calculator */}
       <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.4 }}>
         <div className="glass-card" style={{ padding: '1.1rem 1.3rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
@@ -258,7 +250,6 @@ export function Calculator() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'stretch', gap: 14, flexWrap: 'wrap' }}>
-            {/* inputs — left */}
             <div style={{ display: 'flex', gap: 10, flex: '1 1 240px' }}>
               <div style={{ flex: 1 }}>
                 <FormLabel>Target GPA</FormLabel>
@@ -288,7 +279,6 @@ export function Calculator() {
               </div>
             </div>
 
-            {/* verdict — right */}
             <div style={{
               flex: '1 1 220px', display: 'flex', alignItems: 'center', gap: 10,
               padding: '10px 14px', borderRadius: 10,
@@ -322,13 +312,8 @@ export function Calculator() {
         </div>
       </motion.div>
 
-      {/* ── Main two-column grid ─────────────────────────── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '1.25rem', alignItems: 'start' }}>
-
-        {/* ── LEFT column ─────────────────────────────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-
-          {/* Add subject */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}>
             <div className="glass-card" style={{ padding: '1.25rem 1.4rem' }}>
               <SectionHeading>Add Subject</SectionHeading>
@@ -366,7 +351,6 @@ export function Calculator() {
             </div>
           </motion.div>
 
-          {/* Subjects list */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16, duration: 0.4 }}>
             <div className="glass-card" style={{ padding: '1.4rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.1rem' }}>
@@ -388,7 +372,6 @@ export function Calculator() {
                 </span>
               </div>
 
-              {/* Column headers */}
               {subjects.length > 0 && (
                 <div style={{
                   display: 'grid', gridTemplateColumns: '1fr 80px 100px 54px 36px',
@@ -509,13 +492,12 @@ export function Calculator() {
                       <BookOpen size={18} style={{ color: 'var(--accent)' }} />
                     </div>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-                      No subjects yet — add one above
+                      No subjects yet, add one above
                     </p>
                   </div>
                 )}
               </div>
 
-              {/* Total points / total credits row — right under the added subjects */}
               {subjects.length > 0 && (
                 <div style={{
                   display: 'grid', gridTemplateColumns: '1fr 80px 100px 54px 36px',
@@ -539,10 +521,9 @@ export function Calculator() {
           </motion.div>
         </div>
 
-        {/* ── RIGHT column ────────────────────────────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
 
-          {/* GPA ring — live, no calculate button */}
+          {/* GPA ring */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.13, duration: 0.4 }}>
             <div
               className="glass-card accent-top"
@@ -578,7 +559,7 @@ export function Calculator() {
             </div>
           </motion.div>
 
-          {/* Personal target */}
+          {/* personal target */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.19, duration: 0.4 }}>
             <div className="glass-card" style={{ padding: '1.3rem 1.4rem' }}>
               <SectionHeading>Personal Target</SectionHeading>
@@ -629,7 +610,6 @@ export function Calculator() {
             </div>
           </motion.div>
 
-          {/* Quick actions */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.4 }}>
             <div className="glass-card" style={{ padding: '1.3rem 1.4rem' }}>
               <SectionHeading>Quick Actions</SectionHeading>
@@ -672,7 +652,7 @@ export function Calculator() {
         </div>
       </div>
 
-      {/* ── Save to Semester modal ────────────────────────── */}
+      {/* save to semester modal */}
       <SaveToSemesterModal
         isOpen={showSaveModal}
         onClose={() => setShowSaveModal(false)}
@@ -680,7 +660,7 @@ export function Calculator() {
         onSaved={handleSemesterSaved}
       />
 
-      {/* ── Confetti overlay ─────────────────────────────── */}
+      {/* confetti */}
       <AnimatePresence>
         {showConfetti && (
           <motion.div

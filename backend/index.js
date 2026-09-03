@@ -28,14 +28,13 @@ app.post('/chat', async (req, res) => {
     res.json({ reply: response.choices[0].message.content });
 });
 
-// --- Marksheet extraction ---
 app.post('/extract-marksheet', upload.single('marksheet'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
     }
 
     try {
-        // 1. Extract raw text from the PDF
+        // extract raw text 
         const parsed = await pdfParse(req.file.buffer);
         const rawText = parsed.text;
 
@@ -43,12 +42,12 @@ app.post('/extract-marksheet', upload.single('marksheet'), async (req, res) => {
             return res.status(422).json({ error: 'Could not read text from this PDF. It may be a scanned image rather than a digital PDF.' });
         }
 
-        // 2. Ask the LLM to turn it into structured JSON
+        // structured JSON prompt
         const extractionPrompt = `You are a data extraction engine. You will be given raw text extracted from a college marksheet/grade sheet PDF. Extract every subject row into JSON.
 
 For each subject, extract:
 - "name": the subject name (clean it up, remove subject codes)
-- "credits": the credit value as a number (this PDF includes a credits column — use it exactly as printed)
+- "credits": the credit value as a number (this PDF includes a credits column, use it exactly as printed)
 - "grade": the letter grade exactly as printed (e.g. O, A+, A, B+, B, C, RA, U, AB, W)
 - "tag": predict ONE of these course categories based on the subject name: Core, BS, ES, PE, OE, Humanities, Lab
   - Use "Lab" for anything with "Laboratory", "Lab", or clearly hands-on/practical in the name
@@ -81,7 +80,6 @@ ${rawText}
         });
 
         let content = completion.choices[0].message.content.trim();
-        // Defensive: strip markdown code fences if the model adds them anyway
         content = content.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
 
         let structured;

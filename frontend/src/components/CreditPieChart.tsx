@@ -5,15 +5,14 @@ interface CreditPieChartProps {
   title?: string;
 }
 
-/* Course-type palette — distinct from grade colors (purple/cyan/green/amber/orange/red) */
 const COURSE_COLORS: Record<string, string> = {
-  Core: '#e11d48', // rose
-  BS: '#0284c7', // sky
-  ES: '#65a30d', // lime
-  PE: '#4f46e5', // indigo
-  OE: '#db2777', // pink
-  Humanities: '#0d9488', // teal
-  Lab: '#7c3aed', // violet (distinct from grade-o's #a855f7 by lightness)
+  Core: '#e11d48',
+  BS: '#0284c7',
+  ES: '#65a30d',
+  PE: '#4f46e5',
+  OE: '#db2777',
+  Humanities: '#0d9488',
+  Lab: '#7c3aed',
 };
 const FALLBACK = ['#e11d48', '#0284c7', '#65a30d', '#4f46e5', '#db2777', '#0d9488', '#7c3aed'];
 
@@ -68,7 +67,6 @@ function CustomLegend({ payload }: any) {
 export function CreditPieChart({ data, title }: CreditPieChartProps) {
   const total = data.reduce((s, d) => s + d.value, 0);
 
-  /* percentage label rendered directly on slice */
   const renderLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, value }: any) => {
     const pct = Math.round((value / total) * 100);
     if (pct < 8) return null; // skip tiny slices

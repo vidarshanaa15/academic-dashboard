@@ -17,7 +17,6 @@ const noBorder: React.CSSProperties = {
     boxShadow: 'none',
 };
 
-// ── Palettes ─────────────────────────────────────────────────────────────
 const LIGHT = {
     background: '#ffffff',
     textPrimary: '#111827',
@@ -31,8 +30,6 @@ const LIGHT = {
     inProgressText: '#92400e',
 };
 
-// Aligned with the app's actual dark theme tokens from globals.css
-// (--bg, --surface, --muted, --text-primary, --text-secondary, --warning)
 const DARK = {
     background: '#0f172a',
     textPrimary: '#f1f5f9',
@@ -46,7 +43,6 @@ const DARK = {
     inProgressText: '#f59e0b',
 };
 
-// GPA/CGPA accents matched to --accent and --success from globals.css
 function getStatColors(isDark: boolean) {
     return {
         gpa: isDark ? '#06b6d4' : '#6366f1',
@@ -156,10 +152,6 @@ function SVGDonutChart({
     const legendRows = Math.ceil(slices.length / 3);
     const legendStartY = SIZE + 6;
     const totalSVGH = legendStartY + legendRows * LEGEND_ROW_H + 2;
-
-    // donut slices need a stroke matching the card background so segments
-    // stay visually separated in both themes (white stroke would show as
-    // a halo on a dark background)
     const sliceStroke = theme.background;
 
     return (
@@ -225,7 +217,7 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
 
         const stats = [
             { label: 'Semester GPA', value: semester.gpa?.toFixed(2) ?? 'Pending', color: statColors.gpa },
-            { label: 'Cumulative CGPA', value: semester.cgpa?.toFixed(2) ?? '—', color: statColors.cgpa },
+            { label: 'Cumulative CGPA', value: semester.cgpa?.toFixed(2) ?? '-', color: statColors.cgpa },
             { label: 'Total Credits', value: String(totalCredits), color: theme.statValueDefault },
             { label: 'Subjects', value: String(semester.subjects.length), color: theme.statValueDefault },
         ];
@@ -250,7 +242,6 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
                     ['--tw-bg-opacity' as any]: '1',
                 }}
             >
-                {/* ── Header ───────────────────────────────────────────── */}
                 <div style={{ ...noBorder, marginBottom: 20 }}>
                     <h1 style={{ ...noBorder, fontSize: 24, fontWeight: 700, color: theme.textPrimary, margin: 0 }}>
                         {semester.name}
@@ -269,7 +260,6 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
                     </p>
                 </div>
 
-                {/* ── Stats row ────────────────────────────────────────── */}
                 <div style={{ ...noBorder, display: 'flex', gap: 12, marginBottom: 26 }}>
                     {stats.map(stat => (
                         <div key={stat.label} style={{
@@ -284,7 +274,6 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
                     ))}
                 </div>
 
-                {/* ── Subjects ─────────────────────────────────────────── */}
                 <h2 style={{ ...noBorder, fontSize: 14, fontWeight: 600, marginBottom: 8, color: theme.textSecondary }}>Subjects</h2>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5, marginBottom: 26, border: 'none' }}>
                     <thead>
@@ -325,7 +314,7 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
                                     )}
                                 </td>
                                 <td style={{ padding: '7px 12px', color: theme.textSecondary, borderBottom: `1px solid ${theme.rowDivider}`, borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
-                                    {subject.grade ? gradeMapping[subject.grade] : '—'}
+                                    {subject.grade ? gradeMapping[subject.grade] : '-'}
                                 </td>
                                 <td style={{ padding: '7px 12px', color: theme.textSecondary, fontSize: 12, borderBottom: `1px solid ${theme.rowDivider}`, borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
                                     {subject.tag}
@@ -335,7 +324,6 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
                     </tbody>
                 </table>
 
-                {/* ── Distribution ─────────────────────────────────────── */}
                 {(creditData.length > 0 || gradeData.length > 0) && (
                     <>
                         <h2 style={{ ...noBorder, fontSize: 14, fontWeight: 600, marginBottom: 8, color: theme.textSecondary }}>Distribution</h2>
@@ -364,7 +352,6 @@ export const SemesterPDFPreview = forwardRef<HTMLDivElement, Props>(
                     </>
                 )}
 
-                {/* ── Footer ───────────────────────────────────────────── */}
                 <div style={{
                     ...noBorder,
                     marginTop: 24, borderTop: `1px solid ${theme.border}`,

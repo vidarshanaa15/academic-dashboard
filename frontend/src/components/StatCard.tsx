@@ -35,14 +35,12 @@ export function StatCard({ title, value, subtitle, icon: Icon, trend, variant = 
       className="glass-card"
       style={{ padding: '1.3rem 1.4rem', position: 'relative', overflow: 'hidden' }}
     >
-      {/* top accent line */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, height: 2,
         background: meta.glow,
         borderRadius: '18px 18px 0 0',
       }} />
 
-      {/* ambient glow blob */}
       <div style={{
         position: 'absolute', top: -30, right: -30, width: 100, height: 100,
         borderRadius: '50%', pointerEvents: 'none',
@@ -51,7 +49,6 @@ export function StatCard({ title, value, subtitle, icon: Icon, trend, variant = 
 
       <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          {/* label */}
           <p style={{
             fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.07em',
             textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8,
@@ -59,12 +56,10 @@ export function StatCard({ title, value, subtitle, icon: Icon, trend, variant = 
             {title}
           </p>
 
-          {/* value */}
           <div style={{
             fontSize: typeof value === 'string' && value.length > 7 ? '1.5rem' : '2rem',
             fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1,
             color: meta.color,
-            /* gradient text for accent/success variants */
             ...(variant !== 'default' ? {
               background: meta.glow,
               WebkitBackgroundClip: 'text',

@@ -38,7 +38,6 @@ export function CircularProgress({
   const clampedPercentage = Math.min(100, Math.max(0, percentage));
   const offset = circumference - (clampedPercentage / 100) * circumference;
 
-  /* color ramp matching grade system */
   const getColor = () => {
     if (value >= 9) return 'var(--chart-o)';   // purple
     if (value >= 8) return 'var(--accent)';    // violet
@@ -58,7 +57,6 @@ export function CircularProgress({
   return (
     <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
-        {/* track ring */}
         <circle
           cx={size / 2} cy={size / 2} r={radius}
           fill="none"
@@ -66,7 +64,7 @@ export function CircularProgress({
           strokeWidth={strokeWidth}
         />
 
-        {/* main progress arc — flat solid color, no gradient fill */}
+        {/* main progress arc */}
         <motion.circle
           cx={size / 2} cy={size / 2} r={radius}
           fill="none"

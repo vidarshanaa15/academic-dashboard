@@ -26,7 +26,6 @@ const makeDefaultSubject = (isPlanned: boolean): SubjectInput => ({
   name: '', credits: '3', grade: isPlanned ? null : 'O', tag: 'Core',
 });
 
-/* ── small helpers ───────────────────────────────────────────── */
 function FormLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
   return (
     <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', marginBottom: 7 }}>
@@ -40,7 +39,6 @@ function FieldError({ msg }: { msg?: string }) {
   return <p style={{ fontSize: '0.7rem', color: 'var(--danger)', marginTop: 4 }}>{msg}</p>;
 }
 
-/* ── main component ──────────────────────────────────────────── */
 export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
   const [semesterName, setSemesterName] = useState('');
@@ -127,8 +125,6 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Add New Semester" size="lg">
-
-      {/* ── Step indicator ─────────────────────────────────── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1.5rem' }}>
         {([1, 2] as const).map(s => {
           const done = step > s;
@@ -169,8 +165,6 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
       </div>
 
       <AnimatePresence mode="wait">
-
-        {/* ── STEP 1 ─────────────────────────────────────────── */}
         {step === 1 && (
           <motion.div
             key="step1"
@@ -178,7 +172,6 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
             transition={{ duration: 0.25 }}
             style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}
           >
-            {/* Name */}
             <div>
               <FormLabel required>Semester Name</FormLabel>
               <input
@@ -189,7 +182,6 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
               <FieldError msg={errors.name} />
             </div>
 
-            {/* Year + Term */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
                 <FormLabel required>Year</FormLabel>
@@ -208,7 +200,6 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
               </div>
             </div>
 
-            {/* Status picker */}
             <div>
               <FormLabel required>Semester Type</FormLabel>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -267,7 +258,6 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
           </motion.div>
         )}
 
-        {/* ── STEP 2 ─────────────────────────────────────────── */}
         {step === 2 && (
           <motion.div
             key="step2"
@@ -275,7 +265,6 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
             transition={{ duration: 0.25 }}
             style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
           >
-            {/* Summary banner */}
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '10px 14px', borderRadius: 10,
@@ -293,7 +282,6 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
               }
             </div>
 
-            {/* Subject rows */}
             <div
               className="custom-scrollbar"
               style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 320, overflowY: 'auto', paddingRight: 2 }}
@@ -306,7 +294,6 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
                   className="glass-inner"
                   style={{ padding: '0.9rem 1rem' }}
                 >
-                  {/* row header */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                     <span style={{ fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' as const, color: 'var(--text-muted)' }}>
                       Subject {idx + 1}
@@ -323,7 +310,6 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
                     )}
                   </div>
 
-                  {/* name */}
                   <input
                     type="text" placeholder="Subject name" value={subject.name}
                     onChange={e => updateSubject(idx, 'name', e.target.value)}
@@ -334,7 +320,6 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
                   />
                   <FieldError msg={errors[`s${idx}_name`]} />
 
-                  {/* credits / grade / tag */}
                   <div style={{ display: 'grid', gridTemplateColumns: isPlanned ? '1fr 1fr' : '1fr 1fr 1fr', gap: 8 }}>
                     <input
                       type="number" placeholder="Credits" value={subject.credits}
@@ -369,7 +354,6 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
               ))}
             </div>
 
-            {/* Add subject button */}
             <button
               onClick={addSubject}
               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(124,58,237,0.12)')}
@@ -389,7 +373,6 @@ export function AddSemesterModal({ isOpen, onClose, onAdd }: AddSemesterModalPro
               <p style={{ fontSize: '0.8125rem', color: 'var(--danger)', textAlign: 'center' }}>{errors.submit}</p>
             )}
 
-            {/* footer buttons */}
             <div style={{ display: 'flex', gap: 10 }}>
               <motion.button
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}

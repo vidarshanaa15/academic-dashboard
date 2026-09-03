@@ -2,7 +2,6 @@ import { supabase } from './supabase';
 import { Semester, Goal } from '../data/sampleData';
 
 export const fetchAcademicData = async () => {
-  // Fetch semesters and their nested subjects in one clean join
   const { data: semesters, error: semError } = await supabase
     .from('semesters')
     .select(`
@@ -24,13 +23,11 @@ export const fetchAcademicData = async () => {
   };
 };
 
-// --- Semester ---
-
 export const saveSemester = async (
   semester: Omit<Semester, 'subjects' | 'gpa' | 'cgpa'>,
   subjects: { id: string; name: string; credits: number; grade: string | null; tag: string }[]
 ) => {
-  // 1. Insert semester row (gpa/cgpa will be computed by trigger after subjects insert)
+  // insert sem row - gpa/cgpa will be computed by trigger after subj insert
   const { error: semError } = await supabase.from('semesters').insert([{
     id: semester.id,
     name: semester.name,
@@ -42,7 +39,7 @@ export const saveSemester = async (
   }]);
   if (semError) throw semError;
 
-  // 2. Insert all subjects — trigger fires and computes GPA automatically
+  // 2. insert all subj - gpa computed automatically by trig
   if (subjects.length > 0) {
     const { error: subError } = await supabase.from('subjects').insert(
       subjects.map(s => ({ ...s, semester_id: semester.id }))
@@ -50,7 +47,7 @@ export const saveSemester = async (
     if (subError) throw subError;
   }
 
-  // 3. Re-fetch the semester with computed GPA/CGPA from DB
+  // 3. re-fetch sem with computed gpa/cgpa
   const { data, error: fetchError } = await supabase
     .from('semesters')
     .select(`*, subjects (*)`)
@@ -66,8 +63,6 @@ export const updateSemesterStatus = async (id: string, status: 'planned' | 'comp
   if (error) throw error;
 };
 
-// --- Subject grade editing ---
-
 export const updateSubjectGrade = async (
   subjectId: string,
   grade: string,
@@ -77,10 +72,8 @@ export const updateSubjectGrade = async (
     .update({ grade })
     .eq('id', subjectId);
   if (error) throw error;
-  // Trigger fires automatically and recomputes GPA/CGPA on the DB side
 };
 
-// Fetch a single semester with fresh GPA/CGPA after edits
 export const refetchSemester = async (semesterId: string): Promise<Semester> => {
   const { data, error } = await supabase
     .from('semesters')
@@ -116,7 +109,6 @@ export const deleteSubjectFromDb = async (subjectId: string) => {
 };
 
 export const deleteSemesterFromDb = async (semesterId: string) => {
-  // Subjects are deleted automatically via ON DELETE CASCADE
   const { error } = await supabase.from('semesters').delete().eq('id', semesterId);
   if (error) throw error;
 };

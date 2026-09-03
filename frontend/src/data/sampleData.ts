@@ -25,7 +25,6 @@ export interface Goal {
   completed: boolean;
 }
 
-// Grade mapping
 export const gradeMapping: Record<string, number> = {
   'O': 10,
   'A+': 9,
@@ -37,7 +36,6 @@ export const gradeMapping: Record<string, number> = {
 
 export const gradeLabels = ['O', 'A+', 'A', 'B+', 'B', 'C'];
 
-// Helper functions
 export function calculateGPA(subjects: Subject[]): number {
   const graded = subjects.filter(sub => sub.grade !== null);
   if (!graded.length) return 0;
@@ -52,7 +50,6 @@ export function calculateCGPA(semesters: Semester[]): number {
   let totalPoints = 0;
   let totalCredits = 0;
   semesters.forEach(sem => {
-    // Only include completed semesters in CGPA
     if (sem.status !== 'completed') return;
     sem.subjects.forEach(sub => {
       if (!sub.grade) return;

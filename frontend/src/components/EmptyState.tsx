@@ -22,9 +22,7 @@ export function EmptyState({ title, description, action }: EmptyStateProps) {
         padding: '5rem 1.5rem', textAlign: 'center',
       }}
     >
-      {/* icon ring */}
       <div style={{ position: 'relative', marginBottom: '1.75rem' }}>
-        {/* outer glow ring */}
         <div style={{
           position: 'absolute', inset: -12, borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%)',
@@ -37,7 +35,6 @@ export function EmptyState({ title, description, action }: EmptyStateProps) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           position: 'relative',
         }}>
-          {/* inner accent ring */}
           <div style={{
             position: 'absolute', inset: 8, borderRadius: '50%',
             border: '1px solid rgba(124,58,237,0.2)',

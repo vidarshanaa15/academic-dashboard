@@ -8,14 +8,12 @@ import { motion } from 'framer-motion';
 import { fetchAcademicData } from '../lib/dataService';
 import { getTotalCredits, getGradeDistribution, getCreditBreakdown, getSubjectAreaPerformance, type Goal, type Semester } from '../data/sampleData';
 
-/* ── animation variants ─────────────────────────────────────── */
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.45, delay, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] },
 });
 
-/* ── grade color map ────────────────────────────────────────── */
 const GRADE_META: Record<string, { label: string; cls: string }> = {
   O: { label: 'O', cls: 'grade-o' },
   'A+': { label: 'A+', cls: 'grade-ap' },
@@ -30,26 +28,18 @@ const GRADE_CHART_COLORS: Record<string, string> = {
   'B+': 'var(--chart-bp)', B: 'var(--chart-b)', C: 'var(--chart-c)',
 };
 
-/* background variants for the mini grade badges in the "This Semester" card */
 const GRADE_BG: Record<string, string> = {
   O: 'var(--grade-o-bg)', 'A+': 'var(--grade-ap-bg)', A: 'var(--grade-a-bg)',
   'B+': 'var(--grade-bp-bg)', B: 'var(--grade-b-bg)', C: 'var(--grade-c-bg)',
 };
 
-/* Shared fixed height for the "Performance Insights by Subject Area" and
-   "This Semester" cards so the two boxes always line up, regardless of how
-   many subject areas or subjects either one has to list (each scrolls
-   internally instead of growing the card). */
 const CARD_HEIGHT = 440;
 
-/* ── priority config (mirrors Goals page) ─────────────────────── */
 const PRIORITY_META = {
   High: { icon: Flame, color: 'var(--danger)', bg: 'var(--danger-muted)', border: 'rgba(239,68,68,0.25)' },
   Medium: { icon: ChevronUp, color: 'var(--warning)', bg: 'var(--warning-muted)', border: 'rgba(245,158,11,0.25)' },
   Low: { icon: Minus, color: 'var(--success)', bg: 'var(--success-muted)', border: 'rgba(16,185,129,0.25)' },
 } as const;
-
-/* ── subcomponents ──────────────────────────────────────────── */
 
 function StatCard({
   title, value, subtitle, icon: Icon, accent = false, success = false, showTopLine = true,
@@ -59,7 +49,6 @@ function StatCard({
 }) {
   return (
     <div className="glass-card" style={{ padding: '1.4rem 1.5rem', position: 'relative', overflow: 'hidden', height: '100%' }}>
-      {/* top glow line */}
       {showTopLine && (
         <div style={{
           position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
@@ -97,8 +86,6 @@ function StatCard({
   );
 }
 
-/* Upcoming-goal tile: shows the highest-priority incomplete goal, or an
-   "Add Goal" prompt that routes the user to the Goals page. */
 function UpcomingGoalCard({
   goal, onClick,
 }: {
@@ -146,7 +133,6 @@ function UpcomingGoalCard({
         fontFamily: 'inherit', display: 'block',
       }}
     >
-      {/* top glow line */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
         background: 'linear-gradient(90deg, var(--accent), var(--accent-2))',
@@ -191,9 +177,6 @@ function UpcomingGoalCard({
   );
 }
 
-/* "This Semester" tile: a compact view of the current (in-progress, or most
-   recent) semester's subjects/grades. Clicking routes to the Semesters page
-   with that semester's id in navigation state so it can be auto-opened. */
 function ThisSemesterCard({
   semester, onClick,
 }: {
@@ -241,7 +224,6 @@ function ThisSemesterCard({
         fontFamily: 'inherit', display: 'flex', flexDirection: 'column',
       }}
     >
-      {/* top glow line */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
         background: isPlanned
@@ -269,7 +251,6 @@ function ThisSemesterCard({
         <ChevronRight size={16} style={{ color: 'var(--text-muted)', flexShrink: 0, marginTop: 4 }} />
       </div>
 
-      {/* quick stat row */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: '1rem' }}>
         <div className="glass-inner" style={{ padding: '0.6rem', borderRadius: 10, textAlign: 'center' }}>
           <p style={{ fontSize: '0.6rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: 3 }}>GPA</p>
@@ -331,7 +312,6 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ── main component ─────────────────────────────────────────── */
 export function Overview() {
   const navigate = useNavigate();
   const [academicData, setAcademicData] = useState<{ semesters: any[]; goals: Goal[] } | null>(null);
@@ -354,9 +334,6 @@ export function Overview() {
   const semesters = academicData?.semesters || [];
   const goals = academicData?.goals || [];
 
-  // Numeric rank helper shared by the chart sort and the "current semester" lookup.
-  // "Semester N" sorts numerically; anything without a number is treated as
-  // farthest out so real semesters take priority.
   const semesterRank = (s: string) => {
     const n = parseInt(s.replace(/\D/g, ''), 10);
     return Number.isNaN(n) ? Infinity : n;
@@ -365,11 +342,7 @@ export function Overview() {
   const gpaChartData = useMemo(() => {
     if (!semesters.length) return [];
     return [...semesters]
-      // Bug fix: an in-progress semester has gpa/cgpa === null until grades are
-      // finalized. Previously `sem.gpa || 0` coerced that null to 0, which made
-      // the line chart plummet to zero for the newest semester. Instead, we
-      // simply exclude semesters that don't have computed values yet — the
-      // chart should only ever plot real GPA/CGPA points.
+      // exclude semesters that don't have computed values yet
       .filter(sem => sem.gpa != null && sem.cgpa != null)
       .sort((a, b) => semesterRank(a.name) - semesterRank(b.name))
       .map(sem => ({ semester: sem.name, gpa: sem.gpa, cgpa: sem.cgpa }));
@@ -386,9 +359,6 @@ export function Overview() {
     })[0];
   }, [goals]);
 
-  // The semester to feature in "This Semester": prefer the one currently in
-  // progress (status === 'planned'); otherwise fall back to the most recent
-  // completed semester by semester number.
   const currentSemester = useMemo(() => {
     if (!semesters.length) return null;
     const ongoing = semesters.find(sem => sem.status === 'planned');
@@ -431,8 +401,6 @@ export function Overview() {
 
   return (
     <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.75rem', maxWidth: 1280, margin: '0 auto' }}>
-
-      {/* ── Page header ─────────────────────────────────────── */}
       <motion.div {...fadeUp(0)}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <div>
@@ -461,10 +429,6 @@ export function Overview() {
         </div>
       </motion.div>
 
-      {/* ── Stat cards ──────────────────────────────────────── */}
-      {/* First 3 tiles use a smaller flex-basis so they sit slightly
-          narrower; the goal tile gets extra grow/basis to comfortably
-          fit a user-authored goal title. */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
         {[
           { title: 'Current CGPA', value: currentCGPA.toFixed(2), subtitle: 'Out of 10.0', icon: GraduationCap, accent: true, showTopLine: false },
@@ -481,7 +445,6 @@ export function Overview() {
         </motion.div>
       </div>
 
-      {/* ── Credits progress banner ─────────────────────────── */}
       <motion.div {...fadeUp(0.15)}>
         <div className="glass-card" style={{ padding: '1.25rem 1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
@@ -501,12 +464,9 @@ export function Overview() {
         </div>
       </motion.div>
 
-      {/* ── Key achievements ────────────────────────────────── */}
       <motion.div {...fadeUp(0.2)}>
         <SectionHeading>Key Achievements</SectionHeading>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-
-          {/* Highest GPA */}
           <div className="glass-card" style={{ padding: '1.4rem 1.5rem', position: 'relative', overflow: 'hidden' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
               <div style={{
@@ -531,7 +491,6 @@ export function Overview() {
             </div>
           </div>
 
-          {/* Most common grade */}
           <div className="glass-card" style={{ padding: '1.4rem 1.5rem', position: 'relative', overflow: 'hidden' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
               <div style={{
@@ -560,7 +519,6 @@ export function Overview() {
         </div>
       </motion.div>
 
-      {/* ── GPA / CGPA trend ────────────────────────────────── */}
       <motion.div {...fadeUp(0.25)}>
         <div className="glass-card" style={{ padding: '1.5rem' }}>
           <SectionHeading>GPA &amp; CGPA Trend</SectionHeading>
@@ -568,12 +526,10 @@ export function Overview() {
         </div>
       </motion.div>
 
-      {/* ── Grade distribution + Credit breakdown ───────────── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
         <motion.div {...fadeUp(0.3)}>
           <div className="glass-card" style={{ padding: '1.5rem', height: '100%' }}>
             <SectionHeading>Grade Distribution</SectionHeading>
-            {/* grade legend row */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>
               {Object.entries(GRADE_META).map(([g, meta]) => (
                 <span key={g} className={`grade-badge ${meta.cls}`}>{meta.label}</span>
@@ -591,7 +547,6 @@ export function Overview() {
         </motion.div>
       </div>
 
-      {/* ── Subject area performance (now half-width) + This Semester ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1rem', alignItems: 'stretch' }}>
         <motion.div {...fadeUp(0.4)}>
           <div className="glass-card" style={{ padding: '1.5rem', height: CARD_HEIGHT, maxHeight: CARD_HEIGHT, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -612,7 +567,6 @@ export function Overview() {
                       borderBottom: isLast ? 'none' : '1px solid var(--glass-border)',
                     }}
                   >
-                    {/* rank pill */}
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       width: 22, height: 22, borderRadius: '50%', fontSize: '0.625rem', fontWeight: 700,
@@ -654,12 +608,12 @@ export function Overview() {
                     {/* strength/opportunity indicator */}
                     <span style={{ width: 14, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
                       {isTop && (
-                        <span title="Strength — your best-performing subject area" style={{ display: 'flex', cursor: 'help' }}>
+                        <span title="Strength: your best-performing subject area" style={{ display: 'flex', cursor: 'help' }}>
                           <ChevronUp size={13} style={{ color: 'var(--success)' }} />
                         </span>
                       )}
                       {isBottom && (
-                        <span title="Improvement opportunity — your lowest-performing subject area" style={{ display: 'flex', cursor: 'help' }}>
+                        <span title="Improvement opportunity: your lowest-performing subject area" style={{ display: 'flex', cursor: 'help' }}>
                           <Target size={12} style={{ color: 'var(--warning)' }} />
                         </span>
                       )}
@@ -669,8 +623,7 @@ export function Overview() {
               })}
             </div>
 
-            {/* legend — explains the strength/opportunity icons since the
-                symbols alone can be ambiguous */}
+            {/* legend */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
               paddingTop: 10, marginTop: 6, borderTop: '1px solid var(--glass-border)', flexShrink: 0,

@@ -29,7 +29,6 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,
-        /* theme-aware sidebar surface — solid, not glassy */
         background: 'var(--sidebar)',
         backdropFilter: 'blur(14px)',
         WebkitBackdropFilter: 'blur(14px)',
@@ -38,7 +37,6 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         zIndex: 40,
       }}
     >
-      {/* ── Logo area ─────────────────────────────────────── */}
       <div style={{
         height: 64,
         display: 'flex',
@@ -49,7 +47,6 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         flexShrink: 0,
         gap: 12,
       }}>
-        {/* icon mark */}
         <div style={{
           width: 34, height: 34, borderRadius: 10, flexShrink: 0,
           background: 'linear-gradient(135deg, var(--accent), #5b21b6)',
@@ -80,9 +77,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         </AnimatePresence>
       </div>
 
-      {/* ── Nav items ─────────────────────────────────────── */}
       <nav style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '16px 10px' }}>
-        {/* section label */}
         <AnimatePresence>
           {!isCollapsed && (
             <motion.p
@@ -125,7 +120,6 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                       cursor: 'pointer',
                       position: 'relative',
                       transition: 'background 0.2s ease',
-                      /* active vs inactive */
                       background: isActive
                         ? 'var(--accent-glow)'
                         : 'transparent',
@@ -137,7 +131,6 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                       if (!isActive) e.currentTarget.style.background = 'transparent';
                     }}
                   >
-                    {/* active indicator bar */}
                     {isActive && (
                       <motion.div
                         layoutId="active-indicator"
@@ -151,7 +144,6 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                       />
                     )}
 
-                    {/* icon */}
                     <Icon
                       size={18}
                       style={{
@@ -161,7 +153,6 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                       }}
                     />
 
-                    {/* label */}
                     <AnimatePresence>
                       {!isCollapsed && (
                         <motion.span
@@ -191,7 +182,6 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         </ul>
       </nav>
 
-      {/* ── Collapse toggle ───────────────────────────────── */}
       <div style={{ padding: '10px', borderTop: '1px solid var(--glass-border)', flexShrink: 0 }}>
         <button
           onClick={onToggle}

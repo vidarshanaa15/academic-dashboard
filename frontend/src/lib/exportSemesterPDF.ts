@@ -11,10 +11,6 @@ export async function exportSemesterPDF(
     if (!element) throw new Error('PDF container not found');
 
     const scale = 2;
-
-    // Match whatever theme the preview component actually rendered in —
-    // previously this was hardcoded to white/dark-text, which silently
-    // overrode dark mode and made the capture unreadable.
     const captureBg = isDarkMode ? '#0f172a' : '#ffffff';
     const captureText = isDarkMode ? '#f1f5f9' : '#111827';
 
@@ -50,11 +46,8 @@ export async function exportSemesterPDF(
     const x = margin + (maxW - printW) / 2;
     const y = margin + (maxH - printH) / 2;
 
-    // Fill the full A4 page with the theme background first, so any
-    // margin around the centered image matches the theme instead of
-    // always showing white (jsPDF pages default to white).
     if (isDarkMode) {
-        pdf.setFillColor(15, 23, 42); // #0f172a
+        pdf.setFillColor(15, 23, 42);
         pdf.rect(0, 0, pageW, pageH, 'F');
     }
 
@@ -62,8 +55,6 @@ export async function exportSemesterPDF(
 
     pdf.save(`${semester.name.replace(/\s+/g, '_')}_Report.pdf`);
 }
-
-// ── helpers ────────────────────────────────────────────────────────────────
 
 function blobToDataURL(blob: Blob): Promise<string> {
     return new Promise((resolve, reject) => {

@@ -37,7 +37,6 @@ interface Goal {
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
-// Builds the system prompt using real student data
 function buildSystemPrompt(semesters: Semester[], goals: Goal[]): string {
     const completedSems = semesters.filter(s => s.status === 'completed');
     const plannedSems = semesters.filter(s => s.status === 'planned');
@@ -52,7 +51,7 @@ function buildSystemPrompt(semesters: Semester[], goals: Goal[]): string {
         const subjectList = sem.subjects.map(sub =>
             `    - ${sub.name} (${sub.credits} credits, Grade: ${sub.grade ?? 'N/A'}, Tag: ${sub.tag})`
         ).join('\n');
-        return `  • ${sem.name} — GPA: ${sem.gpa ?? 'N/A'}, CGPA after this sem: ${sem.cgpa ?? 'N/A'}
+        return `  • ${sem.name} - GPA: ${sem.gpa ?? 'N/A'}, CGPA after this sem: ${sem.cgpa ?? 'N/A'}
 ${subjectList}`;
     }).join('\n\n');
 
@@ -68,7 +67,7 @@ ${subjectList}`;
         `  - [${g.completed ? 'DONE' : g.priority + ' priority'}] ${g.title} (Target: ${g.target_semester})`
     ).join('\n');
 
-    return `You are a personal academic advisor embedded inside this student's academic dashboard. You have full access to their academic history. Never say you don't know their data — it is provided below.
+    return `You are a personal academic advisor embedded inside this student's academic dashboard. You have full access to their academic history. Never say you don't know their data, it is provided below.
 
 === STUDENT ACADEMIC PROFILE ===
 
@@ -104,7 +103,13 @@ O = 10, A+ = 9, A = 8, B+ = 7, B = 6, C = 5
 - If an answer involves a calculation (like a target GPA), don't show the algebra. Just state the assumption in one line and give the result in bold. Example:
   "Assuming ~22 credits next sem, you'd need around **9.4–9.6 GPA** to hit a 9.0 CGPA."
 - Never restate the question back to the student before answering.
-- No headers (#, ##) — this is a chat bubble, not a report.`;
+- No headers (#, ##) - this is a chat bubble, not a report.
+=== SCOPE (IMPORTANT) ===
+- You are an academic advisor for THIS dashboard only. Only answer questions about the student's grades, subjects, CGPA/GPA, credits, semesters, and goals.
+- If asked something unrelated to their academics (movies, trivia, general knowledge, coding help, etc.), politely decline and steer back. Example:
+  "I'm just here for your academic stuff like grades, GPA, goals, that kind of thing. Anything on that front I can help with?"
+- Don't answer the off-topic question first and then redirect. Decline directly, no partial answer.
+- This applies even if the student insists, rephrases, or claims it's for a school project.`;
 }
 
 export default function Chatbot() {
@@ -120,7 +125,6 @@ export default function Chatbot() {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    // Fetch data when chatbot is opened for the first time
     useEffect(() => {
         if (isOpen && !dataLoaded) {
             fetchStudentData();
@@ -191,7 +195,6 @@ export default function Chatbot() {
                         boxShadow: 'var(--shadow-lg)',
                     }}
                 >
-                    {/* Header */}
                     <div style={{
                         padding: 'var(--space-4) var(--space-6)',
                         borderBottom: '1px solid var(--glass-border)',
@@ -246,7 +249,6 @@ export default function Chatbot() {
                         </button>
                     </div>
 
-                    {/* Messages */}
                     <div
                         className="custom-scrollbar"
                         style={{
@@ -379,7 +381,7 @@ export default function Chatbot() {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Input */}
+                    {/* input */}
                     <div style={{
                         padding: 'var(--space-3) var(--space-4)',
                         borderTop: '1px solid var(--glass-border)',
@@ -434,7 +436,6 @@ export default function Chatbot() {
                 </div>
             )}
 
-            {/* Toggle button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="btn-primary glow-accent"
